@@ -3,9 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="UnTocco">
 <meta name="theme-color" content="#e7ebf0">
 <title>UnTocco — La tua voce</title>
@@ -87,42 +84,35 @@
     background:var(--ground);
     color:var(--ink);
     -webkit-font-smoothing:antialiased;
-    padding:22px 16px 40px;
-    min-height:100vh;
+    margin:0;padding:0;
+    height:100vh;height:100dvh;overflow:hidden;
   }
-  .wrap{max-width:1120px;margin:0 auto}
-  .pagehead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:14px}
-  .pagehead h1{font-size:20px;margin:0;letter-spacing:.2px}
-  .pagehead .sub{color:var(--ink-soft);font-size:14px}
-  .pagehead .spacer{flex:1}
+  .wrap{max-width:none;margin:0;height:100%}
+  /* barra comandi minima dentro l'app */
+  .topbar{display:flex;justify-content:flex-end;gap:8px}
   .theme-toggle{
     font-family:inherit;font-size:13px;color:var(--ink-soft);
     background:var(--panel);border:1px solid var(--hair);border-radius:999px;
     padding:6px 14px;cursor:pointer;
   }
   .theme-toggle:hover{color:var(--ink)}
+  .voice-wrap{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);
+    background:var(--panel);border:1px solid var(--hair);border-radius:999px;padding:4px 10px 4px 12px}
+  .voice-select{
+    font-family:inherit;font-size:13px;color:var(--ink);background:transparent;
+    border:none;cursor:pointer;max-width:150px;padding:2px 4px;
+  }
+  .voice-select:focus-visible{outline:3px solid var(--neutral);outline-offset:2px;border-radius:6px}
 
-  /* iPad frame */
-  .ipad{
-    background:var(--frame);
-    border-radius:30px;
-    padding:16px;
-    box-shadow:var(--shadow);
-    position:relative;
-  }
-  .ipad::before{ /* camera */
-    content:"";position:absolute;top:50%;left:9px;transform:translateY(-50%);
-    width:7px;height:7px;border-radius:50%;
-    background:rgba(255,255,255,.35);
-    box-shadow:0 0 0 2px rgba(0,0,0,.25) inset;
-  }
+  /* app a tutto schermo (niente cornice) */
+  .ipad{background:none;padding:0;box-shadow:none;position:relative;height:100%}
+  .ipad::before{display:none}
   .screen{
     background:var(--ground);
-    border-radius:16px;
-    padding:16px;
-    display:flex;flex-direction:column;gap:14px;
-    aspect-ratio:4/3;
-    min-height:560px;
+    border-radius:0;
+    padding:14px;
+    display:flex;flex-direction:column;gap:12px;
+    height:100%;
     position:relative;
     overflow:hidden;
   }
@@ -349,16 +339,15 @@
 <body>
 
 <div class="wrap">
-  <div class="pagehead">
-    <h1>UnTocco &mdash; La tua voce</h1>
-    <span class="sub">Mockup della schermata principale &middot; prototipo minimo (§18)</span>
-    <span class="spacer"></span>
-    <button class="theme-toggle" id="voiceBtn" type="button">Voce: uomo</button>
-    <button class="theme-toggle" id="themeBtn" type="button">Tema</button>
-  </div>
-
-  <div class="ipad" role="group" aria-label="Anteprima app su iPad">
+  <div class="ipad" role="group" aria-label="UnTocco">
     <div class="screen">
+
+      <div class="topbar">
+        <label class="voice-wrap"><span aria-hidden="true">&#128264;</span>
+          <select class="voice-select" id="voiceSelect" aria-label="Scegli la voce"></select>
+        </label>
+        <button class="theme-toggle" id="themeBtn" type="button">Tema</button>
+      </div>
 
       <!-- COMPOSE -->
       <div class="compose">
@@ -485,17 +474,6 @@
 
     </div>
   </div>
-
-  <div class="legend">
-    <span><i class="dot" style="background:var(--yes)"></i> Affermativo &mdash; spunta</span>
-    <span><i class="dot" style="background:var(--maybe)"></i> Incerto &mdash; punto interrogativo</span>
-    <span><i class="dot" style="background:var(--no)"></i> Negativo &mdash; X</span>
-    <span><i class="dot" style="background:var(--urgent)"></i> Urgenza &mdash; sempre in basso a destra</span>
-  </div>
-
-  <p class="note">
-    Mockup cliccabile. Ogni pulsante <b>pronuncia la frase</b> (voce italiana del sistema, dove disponibile<span class="voice-off"> &mdash; il tuo browser qui non espone una voce, ma i comandi restano dimostrabili</span>). Le tre intenzioni e i comandi rapidi parlano subito, senza toccare PARLA (§6). Le icone di contesto aprono i bisogni frequenti; toccando un bisogno la frase entra in composizione e puoi confermarla con PARLA o modificarne l&rsquo;intenzione. <b>Layout congelato</b>: ogni comando resta sempre nella stessa posizione. Prova <b>DOMANDE SÌ/NO</b> e il <b>Tema</b> chiaro/scuro in alto.
-  </p>
 </div>
 
 <script>
@@ -561,36 +539,56 @@
   // ---- speech ----
   var synth = window.speechSynthesis;
   var voice = null;
-  var voicePref = LS.get("voice", "male"); // impostazione richiesta: voce maschile (o salvata)
-  var maleHints=/luca|diego|cosimo|giorgio|carlo|paolo|marco|maschi|\buomo\b|\bmale\b|\bman\b/i;
-  var femaleHints=/alice|elsa|federica|paola|giulia|chiara|femmin|\bdonna\b|female|woman/i;
+  var chosenVoiceName = LS.get("voiceName", null); // voce scelta dall'utente (es. "Luca")
+  var maleHints=/luca|diego|cosimo|giorgio|carlo|paolo|marco/i;
+  function italianVoices(){
+    return (synth && synth.getVoices() || []).filter(function(v){ return /^it/i.test(v.lang); })
+      .sort(function(a,b){ return (b.localService?1:0)-(a.localService?1:0); }); // locali (offline) prima
+  }
   function pickVoice(){
     if(!synth) return;
-    var it = (synth.getVoices()||[]).filter(function(v){return /^it/i.test(v.lang);});
+    var it=italianVoices();
     if(!it.length){ voice=null; return; }
-    it.sort(function(a,b){ return (b.localService?1:0)-(a.localService?1:0); }); // locali prima (offline)
-    if(voicePref==="male"){
-      voice = it.find(function(v){return maleHints.test(v.name);})
-           || it.find(function(v){return !femaleHints.test(v.name);})
-           || it[0];
-    } else {
-      voice = it.find(function(v){return femaleHints.test(v.name);})
-           || it.find(function(v){return !maleHints.test(v.name);})
-           || it[0];
+    if(chosenVoiceName){
+      var m=it.find(function(v){return v.name===chosenVoiceName;});
+      if(m){ voice=m; return; }
     }
+    voice = it.find(function(v){return maleHints.test(v.name);}) || it[0]; // default: voce maschile
   }
-  if(synth){ pickVoice(); if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice; }
+  function populateVoiceSelect(){
+    var sel=document.getElementById("voiceSelect"); if(!sel) return;
+    var it=italianVoices();
+    if(!it.length){ sel.innerHTML='<option>Voce di sistema</option>'; sel.disabled=true; return; }
+    sel.disabled=false; sel.innerHTML="";
+    it.forEach(function(v){
+      var o=document.createElement("option");
+      o.value=v.name; o.textContent=v.name + (v.localService?"":" (online)");
+      if(voice && v.name===voice.name){ o.selected=true; }
+      sel.appendChild(o);
+    });
+  }
+  function refreshVoices(){ pickVoice(); populateVoiceSelect(); }
+  if(synth){ refreshVoices(); if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=refreshVoices; }
   if(!synth) document.body.classList.add("no-voice");
+
   function say(text){
     if(!synth){ return; }
     try{
-      synth.cancel();
+      if(!voice) pickVoice();
       var u = new SpeechSynthesisUtterance(text);
       u.lang="it-IT"; u.rate=1;
-      // se il sistema espone una sola voce italiana, il tono aiuta a distinguere uomo/donna
-      u.pitch = voicePref==="male" ? 0.85 : 1.15;
+      u.pitch = 1;
       if(voice) u.voice=voice;
-      synth.speak(u);
+      // iOS: se qualcosa è già in riproduzione, annulla e riparla con un piccolo ritardo
+      // (cancel() subito prima di speak() su iOS "mangia" la frase). Se non c'è nulla in corso,
+      // parla subito dentro il gesto del tocco: è così che iOS sblocca l'audio.
+      if(synth.speaking || synth.pending){
+        synth.cancel();
+        setTimeout(function(){ try{ synth.resume(); synth.speak(u); }catch(e){} }, 90);
+      } else {
+        try{ synth.resume(); }catch(e){}
+        synth.speak(u);
+      }
     }catch(e){}
   }
 
@@ -714,14 +712,11 @@
   document.getElementById("closeYesno").addEventListener("click", function(){ yesno.classList.remove("open"); });
 
   // ---- theme toggle ----
-  var voiceBtn=document.getElementById("voiceBtn");
-  voiceBtn.textContent = "Voce: " + (voicePref==="male" ? "uomo" : "donna"); // riflette il valore salvato
-  voiceBtn.addEventListener("click", function(){
-    voicePref = voicePref==="male" ? "female" : "male";
-    this.textContent = "Voce: " + (voicePref==="male" ? "uomo" : "donna");
-    LS.set("voice", voicePref);
+  document.getElementById("voiceSelect").addEventListener("change", function(){
+    chosenVoiceName = this.value;
+    LS.set("voiceName", chosenVoiceName);
     pickVoice();
-    say(voicePref==="male" ? "Ciao, questa è la voce maschile." : "Ciao, questa è la voce femminile.");
+    say("Ciao, questa è la voce selezionata.");
   });
 
   var root=document.documentElement;
