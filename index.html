@@ -343,9 +343,6 @@
     <div class="screen">
 
       <div class="topbar">
-        <label class="voice-wrap"><span aria-hidden="true">&#128264;</span>
-          <select class="voice-select" id="voiceSelect" aria-label="Scegli la voce"></select>
-        </label>
         <button class="theme-toggle" id="themeBtn" type="button">Tema</button>
       </div>
 
@@ -539,36 +536,14 @@
   // ---- speech ----
   var synth = window.speechSynthesis;
   var voice = null;
-  var chosenVoiceName = LS.get("voiceName", null); // voce scelta dall'utente (es. "Luca")
-  var maleHints=/luca|diego|cosimo|giorgio|carlo|paolo|marco/i;
-  function italianVoices(){
-    return (synth && synth.getVoices() || []).filter(function(v){ return /^it/i.test(v.lang); })
-      .sort(function(a,b){ return (b.localService?1:0)-(a.localService?1:0); }); // locali (offline) prima
-  }
   function pickVoice(){
     if(!synth) return;
-    var it=italianVoices();
-    if(!it.length){ voice=null; return; }
-    if(chosenVoiceName){
-      var m=it.find(function(v){return v.name===chosenVoiceName;});
-      if(m){ voice=m; return; }
-    }
-    voice = it.find(function(v){return maleHints.test(v.name);}) || it[0]; // default: voce maschile
+    var it=(synth.getVoices()||[]).filter(function(v){ return /^it/i.test(v.lang); })
+      .sort(function(a,b){ return (b.localService?1:0)-(a.localService?1:0); }); // locali (offline) prima
+    // Safari espone alle web app solo un insieme ridotto di voci: per l'italiano Alice.
+    voice = it.find(function(v){ return /alice/i.test(v.name); }) || it[0] || null;
   }
-  function populateVoiceSelect(){
-    var sel=document.getElementById("voiceSelect"); if(!sel) return;
-    var it=italianVoices();
-    if(!it.length){ sel.innerHTML='<option>Voce di sistema</option>'; sel.disabled=true; return; }
-    sel.disabled=false; sel.innerHTML="";
-    it.forEach(function(v){
-      var o=document.createElement("option");
-      o.value=v.name; o.textContent=v.name + (v.localService?"":" (online)");
-      if(voice && v.name===voice.name){ o.selected=true; }
-      sel.appendChild(o);
-    });
-  }
-  function refreshVoices(){ pickVoice(); populateVoiceSelect(); }
-  if(synth){ refreshVoices(); if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=refreshVoices; }
+  if(synth){ pickVoice(); if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice; }
   if(!synth) document.body.classList.add("no-voice");
 
   function say(text){
@@ -712,12 +687,6 @@
   document.getElementById("closeYesno").addEventListener("click", function(){ yesno.classList.remove("open"); });
 
   // ---- theme toggle ----
-  document.getElementById("voiceSelect").addEventListener("change", function(){
-    chosenVoiceName = this.value;
-    LS.set("voiceName", chosenVoiceName);
-    pickVoice();
-    say("Ciao, questa è la voce selezionata.");
-  });
 
   var root=document.documentElement;
   var savedTheme=LS.get("theme", null);
