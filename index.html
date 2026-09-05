@@ -40,7 +40,7 @@
       --panel-sunken:#141b26;
       --ink:#eef2f7;
       --ink-soft:#9fb0c4;
-      --hair:#2c3849;
+      --hair:#3d5069;
       --neutral:#5c82ad;
       --neutral-ink:#08111c;
       --yes:#2ea45f;
@@ -62,7 +62,7 @@
     --panel-sunken:#141b26;
     --ink:#eef2f7;
     --ink-soft:#9fb0c4;
-    --hair:#2c3849;
+    --hair:#3d5069;
     --neutral:#5c82ad;
     --neutral-ink:#08111c;
     --yes:#2ea45f;
@@ -119,7 +119,7 @@
 
   /* Compose bar */
   .compose{
-    display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:stretch;
+    display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;
   }
   .btn-clear{background:var(--panel);border:2px solid var(--no);color:var(--no);min-width:92px}
   .btn-clear .ico{font-size:26px;color:var(--no)}
@@ -147,7 +147,7 @@
   .phrase .text.placeholder{color:var(--ink-soft);font-weight:400}
 
   .btn{
-    font-family:inherit;border:none;border-radius:var(--r);cursor:pointer;
+    font-family:inherit;border:1px solid var(--hair);border-radius:var(--r);cursor:pointer;
     font-weight:700;color:var(--ink);background:var(--panel);
     box-shadow:var(--shadow);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
@@ -165,13 +165,13 @@
   .btn-stop{background:var(--panel-sunken);min-width:96px}
 
   /* Predictive words during composition (home) */
-  .home-suggests{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .home-suggests{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}
   .hsugg{min-height:54px;background:var(--panel);flex-direction:row}
   .hsugg .lab{font-size:18px;font-weight:700;letter-spacing:.2px}
   .hsugg[disabled]{visibility:hidden}
 
   /* Intentions */
-  .intentions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .intentions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px}
   .intent{min-height:104px}
   .intent .ico{font-size:38px}
   .intent .lab{font-size:22px;letter-spacing:.5px}
@@ -180,20 +180,27 @@
   .intent.no{background:var(--no);color:var(--no-ink)}
 
   /* Middle: contexts + side */
-  .middle{display:grid;grid-template-columns:1fr 210px;gap:14px;flex:1;min-height:0}
-  .contexts{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:12px}
+  .middle{display:grid;grid-template-columns:210px 1fr;gap:14px;flex:1;min-height:0}
+  .contexts{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:26px}
   .ctx .ico{font-size:40px}
+  .dpad{display:inline-grid;grid-template-columns:repeat(3,1em);grid-template-rows:repeat(3,1em);
+    font-size:.5em;line-height:1;place-items:center;vertical-align:middle;font-weight:700}
+  .dpad .u{grid-column:2;grid-row:1}
+  .dpad .l{grid-column:1;grid-row:2}
+  .dpad .r{grid-column:3;grid-row:2}
+  .dpad .d{grid-column:2;grid-row:3}
   .ctx .lab{font-size:17px}
-  .side{display:grid;grid-template-rows:1fr 1fr;gap:12px}
+  .side{display:grid;grid-template-rows:1fr;gap:12px}
   .btn-mode{background:var(--panel);border:2px solid var(--neutral)}
   .btn-mode .ico{font-size:34px;color:var(--neutral)}
   .btn-mode .lab{font-size:16px}
   .btn-help{background:var(--urgent);color:var(--urgent-ink)}
   .btn-help .ico{font-size:40px}
+  .btn-help.repeating{animation:pulse 1s ease-in-out infinite;outline:5px solid var(--urgent);outline-offset:3px}
   .btn-help .lab{font-size:22px;letter-spacing:1px}
 
   /* Permanent quick bar */
-  .quickbar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .quickbar{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
   .quick{min-height:66px;background:var(--panel-sunken)}
   .quick .lab{font-size:15px;letter-spacing:.3px}
   .quick .ico{font-size:22px}
@@ -210,7 +217,7 @@
   .btn-back .lab{font-size:18px}
   .ovtitle{font-size:24px;font-weight:700;display:flex;align-items:center;gap:12px}
   .ovtitle .em{font-size:30px}
-  .ovgrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:12px;flex:1}
+  .ovgrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:26px;flex:1}
   .need{background:var(--panel);min-height:96px}
   .need .ico{font-size:34px}
   .need .lab{font-size:18px;text-wrap:balance}
@@ -261,25 +268,31 @@
   .sugg{min-height:56px;background:var(--panel-sunken);flex-direction:row}
   .sugg .lab{font-size:19px;font-weight:700}
   .sugg:empty{visibility:hidden}
+  .freq-row{display:flex;gap:8px}
   .freq{
-    width:100%;background:var(--panel-sunken);border:2px dashed var(--neutral);
+    flex:1;background:var(--panel-sunken);border:2px dashed var(--neutral);
     min-height:58px;flex-direction:row;gap:12px;justify-content:flex-start;padding:10px 18px;
+  }
+  .freq-del{
+    background:var(--panel);border:2px solid var(--no);color:var(--no);
+    min-height:58px;min-width:58px;font-size:24px;
   }
   .freq .ico{font-size:22px;color:var(--neutral)}
   .freq .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft);font-weight:700;white-space:nowrap}
   .freq .lab{font-size:20px;font-weight:700;text-align:left;text-wrap:balance}
-  .kb-rows{display:flex;flex-direction:column;gap:8px;flex:1;justify-content:center}
-  .kb-row{display:flex;gap:8px;justify-content:center}
+  .kb-rows{display:flex;flex-direction:column;gap:26px;flex:1;justify-content:stretch}
+  .kb-row{display:flex;gap:26px;justify-content:stretch;flex:1}
   .key{
     flex:1;background:var(--panel);border-radius:14px;box-shadow:var(--shadow);
-    font-family:inherit;font-weight:700;font-size:26px;color:var(--ink);
-    border:none;cursor:pointer;min-height:60px;max-width:88px;
+    font-family:inherit;font-weight:700;font-size:clamp(28px,4.2vw,52px);color:var(--ink);
+    border:1px solid var(--hair);cursor:pointer;min-height:56px;
     display:flex;align-items:center;justify-content:center;
     transition:transform .05s ease,box-shadow .05s ease;-webkit-tap-highlight-color:transparent;
   }
   .key:active{transform:translateY(2px);box-shadow:var(--shadow-press)}
   .key:focus-visible{outline:4px solid var(--neutral);outline-offset:2px}
   .kb-actions{display:grid;grid-template-columns:1.2fr 1fr 1fr auto auto;gap:10px}
+  .key-mode{color:var(--neutral);border:2px solid var(--neutral);font-size:20px!important;flex:1.3}
   .kb-actions .btn{min-height:64px;flex-direction:row;gap:10px}
   .k-space{background:var(--panel-sunken)}
   .k-back,.k-backword{background:var(--maybe);color:var(--maybe-ink)}
@@ -353,15 +366,6 @@
           <div class="status">Sto preparando la risposta&hellip;</div>
           <div class="text placeholder" id="phraseText">Tocca qui per scrivere&hellip;</div>
         </div>
-        <button class="btn btn-speak" type="button" data-speak="__phrase__" aria-label="Parla">
-          <span class="ico" aria-hidden="true">&#128264;</span><span class="lab">PARLA</span>
-        </button>
-        <button class="btn btn-stop" type="button" id="stopBtn" aria-label="Ferma la voce">
-          <span class="ico" aria-hidden="true">&#9632;</span><span class="lab">STOP</span>
-        </button>
-        <button class="btn btn-clear" type="button" id="clearHomeBtn" aria-label="Cancella tutta la frase">
-          <span class="ico" aria-hidden="true">&#128465;</span><span class="lab">CANCELLA<br>TUTTO</span>
-        </button>
       </div>
 
       <!-- Parole predittive in composizione -->
@@ -382,21 +386,18 @@
 
       <!-- MIDDLE -->
       <div class="middle">
-        <div class="contexts" id="contexts"></div>
         <div class="side">
-          <button class="btn btn-mode" type="button" id="modeBtn">
-            <span class="ico" aria-hidden="true">&#9863;</span><span class="lab">DOMANDE<br>SÌ / NO</span>
-          </button>
-          <button class="btn btn-help" type="button" data-say="Ho bisogno di aiuto">
+          <button class="btn btn-help" type="button" id="helpBtn" aria-label="Aiuto, ripete finché non premi stop">
             <span class="ico" aria-hidden="true">&#9888;</span><span class="lab">AIUTO</span>
           </button>
         </div>
+        <div class="contexts" id="contexts"></div>
       </div>
 
       <!-- QUICK BAR -->
       <div class="quickbar">
-        <button class="btn quick" type="button" data-say="Aspetta"><span class="ico" aria-hidden="true">&#9995;</span><span class="lab">ASPETTA</span></button>
-        <button class="btn quick" type="button" data-say="Fermati"><span class="ico" aria-hidden="true">&#9995;</span><span class="lab">FERMATI</span></button>
+        <button class="btn quick" type="button" data-say="Vaffanculo"><span class="ico" aria-hidden="true">&#128545;</span><span class="lab">VAFFANCULO</span></button>
+        <button class="btn quick" type="button" data-say="Per favore"><span class="ico" aria-hidden="true">&#128591;</span><span class="lab">PER FAVORE</span></button>
         <button class="btn quick" type="button" data-say="Non ho capito"><span class="ico" aria-hidden="true">&#10068;</span><span class="lab">NON HO CAPITO</span></button>
         <button class="btn quick" type="button" data-say="Lasciami finire"><span class="ico" aria-hidden="true">&#9998;</span><span class="lab">LASCIAMI FINIRE</span></button>
       </div>
@@ -435,7 +436,6 @@
 
       <!-- KEYBOARD -->
       <div class="keyboard" id="keyboard" role="dialog" aria-label="Tastiera accessibile">
-        <button class="hand-toggle" type="button" id="handBtn">Mano: destra</button>
         <div class="kb-top">
           <div class="kb-field empty" id="kbField">Scrivi qui&hellip;</div>
           <button class="btn kb-speak" type="button" id="kbSpeak">
@@ -443,11 +443,14 @@
           </button>
         </div>
         <div class="suggests" id="suggests"></div>
-        <button class="btn freq" type="button" id="freqBtn" aria-label="Usa la frase più usata">
-          <span class="ico" aria-hidden="true">&#9733;</span>
-          <span class="eyebrow">Più usata</span>
-          <span class="lab">&hellip;</span>
-        </button>
+        <div class="freq-row" id="freqRow" hidden>
+          <button class="btn freq" type="button" id="freqBtn" aria-label="Usa la frase più usata">
+            <span class="ico" aria-hidden="true">&#9733;</span>
+            <span class="eyebrow">Più usata</span>
+            <span class="lab">&hellip;</span>
+          </button>
+          <button class="btn freq-del" type="button" id="freqDel" aria-label="Cancella questa frase dalle più usate">&#10005;</button>
+        </div>
         <div class="kb-rows" id="kbRows"></div>
         <div class="kb-actions">
           <button class="btn k-space" type="button" id="kSpace"><span class="lab">SPAZIO</span></button>
@@ -486,56 +489,75 @@
     {key:"casa", em:"\u{1F3E0}", lab:"Casa", needs:[
       {em:"\u{1F975}", t:"Ho caldo"},
       {em:"\u{1F976}", t:"Ho freddo"},
-      {em:"\u{1F4A1}", t:"Accendi la luce"},
-      {em:"\u{1F6CF}", t:"Voglio riposare a letto"},
-      {em:"\u{1FA9F}", t:"Apri la finestra"},
-      {em:"\u{1F4FA}", t:"Accendi la televisione"}
+      {em:"\u{1F4A1}", t:"Accendi la luce", sub:[
+        {em:"\u{1F373}", t:"Accendi la luce in cucina, per favore", lab:"Cucina"},
+        {em:"\u{1F6CB}", t:"Accendi la luce in sala, per favore", lab:"Sala"},
+        {em:"\u{1F6AA}", t:"Accendi la luce in corridoio, per favore", lab:"Corridoio"},
+        {em:"\u{1F324}", t:"Accendi la luce in terrazzo, per favore", lab:"Terrazzo"},
+        {em:"\u{1F6CB}", t:"Accendi la luce in soggiorno, per favore", lab:"Soggiorno"},
+        {em:"\u{1F333}", t:"Accendi la luce in giardino, per favore", lab:"Giardino"}
+      ]},
+      {em:"\u{1F6CF}", t:"Vorrei riposare a letto, per favore"},
+      {em:"\u{1FA9F}", t:"Apri la finestra, per favore"},
+      {em:"\u{1F4FA}", t:"Accendi la televisione, per favore"},
+      {em:"\u{1F4BB}", t:"Portami il computer, per favore"},
+      {em:"\u{1F4F1}", t:"Portami il telefono, per favore"},
+      {em:"\u{1F6CB}", t:"Accompagnami sulla poltrona, per favore"},
+      {em:"\u{1F37D}", t:"Accompagnami al tavolo, per favore"},
+      {em:"\u{1F453}", t:"Portami gli occhiali, per favore"}
     ]},
     {key:"cibo", em:"\u{1F374}", lab:"Cibo e bevande", needs:[
       {em:"\u{1F35D}", t:"Ho fame"},
       {em:"\u{1F4A7}", t:"Ho sete"},
-      {em:"\u{1F6B0}", t:"Voglio dell'acqua"},
-      {em:"☕", t:"Voglio un caffè"},
+      {em:"\u{1F6B0}", t:"Vorrei dell'acqua, per favore"},
+      {em:"☕", t:"Vorrei un caffè, per favore"},
       {em:"\u{1F957}", t:"Basta così", s:"quantità"},
-      {em:"\u{1F958}", t:"Vorrei mangiare qualcosa"}
+      {em:"\u{1F958}", t:"Vorrei mangiare qualcosa, per favore"},
+      {em:"\u{1F964}", t:"Mi prepari la borraccia, per favore"},
+      {em:"\u{1F377}", t:"Vorrei del vino, per favore"},
+      {em:"\u{1F375}", t:"Vorrei un tè caldo, per favore"}
     ]},
     {key:"salute", em:"➕", lab:"Salute", needs:[
       {em:"\u{1F915}", t:"Ho dolore"},
       {em:"\u{1FAC1}", t:"Non riesco a respirare bene"},
-      {em:"\u{1F48A}", t:"Voglio le medicine"},
-      {em:"\u{1F469}‍⚕️", t:"Chiamate il medico"},
-      {em:"\u{1F504}", t:"Aiutatemi a cambiare posizione"},
+      {em:"\u{1F48A}", t:"Vorrei le medicine, per favore"},
+      {em:"\u{1F469}‍⚕️", t:"Chiamate il medico, per favore"},
+      {em:"\u{1F504}", t:"Aiutatemi a cambiare posizione, per favore"},
       {em:"\u{1F634}", t:"Sono stanco"}
     ]},
     {key:"persone", em:"\u{1F465}", lab:"Persone", needs:[
-      {em:"\u{1F469}", t:"Voglio vedere mia figlia"},
-      {em:"\u{1F468}", t:"Voglio vedere mio figlio"},
-      {em:"\u{1F9D1}‍⚕️", t:"Chiama l'assistente"},
-      {em:"\u{1F4DE}", t:"Chiama qualcuno"},
-      {em:"\u{1F91D}", t:"Resta con me"},
-      {em:"\u{1F636}", t:"Voglio stare da solo"}
+      {em:"\u{1F469}", t:"Chiama Anna, per favore", s:"moglie"},
+      {em:"\u{1F469}", t:"Chiama Roberta, per favore", s:"figlia"},
+      {em:"\u{1F468}", t:"Chiama Michele, per favore", s:"figlio"},
+      {em:"\u{1F469}", t:"Chiama Alice, per favore", s:"figlia"},
+      {em:"\u{1F468}", t:"Chiama Andrea, per favore", s:"genero"},
+      {em:"\u{1F468}", t:"Chiama Fabrizio, per favore", s:"genero"},
+      {em:"\u{1F4DE}", t:"Vorrei chiamare", s:"scegli il nome", compose:true}
     ]},
     {key:"bagno", em:"\u{1F6BF}", lab:"Bagno e igiene", needs:[
-      {em:"\u{1F6BD}", t:"Devo andare in bagno"},
-      {em:"\u{1F6BF}", t:"Voglio lavarmi"},
-      {em:"\u{1FAA5}", t:"Voglio fare la doccia"},
-      {em:"\u{1F455}", t:"Voglio vestirmi"},
-      {em:"\u{1FAA5}", t:"Devo lavarmi i denti"},
-      {em:"\u{1F9FC}", t:"Voglio lavarmi le mani"}
+      {em:"\u{1F6BD}", t:"Devo andare in bagno, per favore"},
+      {em:"\u{1F6BF}", t:"Vorrei lavarmi, per favore"},
+      {em:"\u{1FAA5}", t:"Vorrei fare la doccia, per favore"},
+      {em:"\u{1F455}", t:"Vorrei vestirmi, per favore"},
+      {em:"\u{1FAA5}", t:"Devo lavarmi i denti, per favore"},
+      {em:"\u{1F9FC}", t:"Vorrei lavarmi le mani, per favore"}
     ]},
-    {key:"spostamenti", em:"\u{1F6AA}", lab:"Spostamenti", needs:[
-      {em:"\u{1F6B6}", t:"Voglio uscire"},
-      {em:"\u{1F3E1}", t:"Voglio tornare a casa"},
-      {em:"\u{1FA91}", t:"Voglio sedermi"},
-      {em:"\u{1F697}", t:"Voglio andare in macchina"},
-      {em:"\u{1F9CD}", t:"Voglio alzarmi"},
-      {em:"\u{1F9ED}", t:"Andiamo da un'altra parte"}
+    {key:"spostamenti", em:"<span class='dpad'><span class='u'>↑</span><span class='l'>←</span><span class='r'>→</span><span class='d'>↓</span></span>", lab:"Spostamenti", needs:[
+      {em:"\u{1F6CF}", t:"Vorrei andare in camera, per favore"},
+      {em:"\u{1F6CB}", t:"Vorrei andare in soggiorno, per favore"},
+      {em:"\u{1F37D}", t:"Vorrei andare in sala, per favore"},
+      {em:"\u{1F6BD}", t:"Vorrei andare in bagno, per favore"},
+      {em:"\u{1FA91}", t:"Vorrei andare in poltrona, per favore"},
+      {em:"\u{1F333}", t:"Vorrei andare in giardino, per favore"},
+      {em:"\u{1F9CD}", t:"Vorrei alzarmi, per favore"},
+      {em:"\u{1F9ED}", t:"Andiamo da un'altra parte, per favore"}
     ]}
   ];
 
   // ---- speech ----
   var synth = window.speechSynthesis;
   var voice = null;
+  var helpRepeating = false; // AIUTO: ripete finché non si preme STOP o un altro comando
   function pickVoice(){
     if(!synth) return;
     var it=(synth.getVoices()||[]).filter(function(v){ return /^it/i.test(v.lang); })
@@ -546,9 +568,34 @@
   if(synth){ pickVoice(); if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice; }
   if(!synth) document.body.classList.add("no-voice");
 
+  // AIUTO ripetuto
+  function speakHelp(){
+    if(!helpRepeating||!synth) return;
+    try{
+      if(!voice) pickVoice();
+      var u=new SpeechSynthesisUtterance("Aiuto");
+      u.lang="it-IT"; u.rate=1; u.pitch=1; if(voice) u.voice=voice;
+      u.onend=function(){ if(helpRepeating) setTimeout(speakHelp, 2000); };
+      synth.speak(u);
+    }catch(e){}
+  }
+  function startHelp(){
+    if(!synth) return;
+    helpRepeating=true;
+    var b=document.getElementById("helpBtn"); if(b) b.classList.add("repeating");
+    if(synth.speaking||synth.pending){ synth.cancel(); setTimeout(speakHelp,90); }
+    else { try{ synth.resume(); }catch(e){} speakHelp(); }
+  }
+  function stopHelp(){
+    helpRepeating=false;
+    var b=document.getElementById("helpBtn"); if(b) b.classList.remove("repeating");
+    if(synth) synth.cancel();
+  }
+
   function say(text){
     if(!synth){ return; }
     try{
+      stopHelp();                       // un nuovo comando ferma l'allarme AIUTO
       if(!voice) pickVoice();
       var u = new SpeechSynthesisUtterance(text);
       u.lang="it-IT"; u.rate=1;
@@ -581,11 +628,12 @@
     return best;
   }
   function renderFreq(){
+    var row=document.getElementById("freqRow");
     var el=document.getElementById("freqBtn");
-    if(!el) return;
+    if(!row||!el) return;
     var p=topPhrase();
-    if(p){ el.querySelector(".lab").textContent=p; el.hidden=false; }
-    else { el.hidden=true; }
+    if(p){ el.querySelector(".lab").textContent=p; row.hidden=false; }
+    else { row.hidden=true; }
   }
   function recordPhrase(text){
     text=(text||"").trim();
@@ -637,25 +685,31 @@
   var overlay=document.getElementById("overlay");
   var ovtitle=document.getElementById("ovtitle");
   var ovgrid=document.getElementById("ovgrid");
-  function openCtx(c){
-    ovtitle.innerHTML='<span class="em" aria-hidden="true">'+c.em+'</span>'+c.lab;
+  var ovStack=[]; // livelli aperti (contesto -> eventuale sotto-menù)
+  function closeOverlay(){ overlay.classList.remove("open"); ovStack=[]; }
+  function renderLevel(){
+    var lvl=ovStack[ovStack.length-1];
+    ovtitle.innerHTML='<span class="em" aria-hidden="true">'+lvl.em+'</span>'+lvl.title;
     ovgrid.innerHTML="";
-    c.needs.forEach(function(n){
+    lvl.needs.forEach(function(n){
       var b=document.createElement("button");
       b.className="btn need"; b.type="button";
-      b.innerHTML='<span class="ico" aria-hidden="true">'+n.em+'</span><span class="lab">'+n.t+(n.s?'<small>'+n.s+'</small>':'')+'</span>';
+      var label=n.lab||n.t;
+      b.innerHTML='<span class="ico" aria-hidden="true">'+n.em+'</span><span class="lab">'+label+(n.s?'<small>'+n.s+'</small>':'')+'</span>';
       b.addEventListener("click", function(){
-        setPhrase(n.t);
-        say(n.t);
-        recordPhrase(n.t);
-        preparing(false);
-        overlay.classList.remove("open");
+        if(n.sub){ ovStack.push({title:(n.lab||n.t), em:n.em, needs:n.sub}); renderLevel(); return; } // apre il sotto-menù
+        if(n.compose){ setPhrase(n.t+" "); preparing(true); closeOverlay(); return; } // in composizione, mostra i nomi
+        setPhrase(n.t); say(n.t); recordPhrase(n.t); preparing(false); closeOverlay();
       });
       ovgrid.appendChild(b);
     });
     overlay.classList.add("open");
   }
-  document.getElementById("backBtn").addEventListener("click",function(){ overlay.classList.remove("open"); });
+  function openCtx(c){ ovStack=[{title:c.lab, em:c.em, needs:c.needs}]; renderLevel(); }
+  document.getElementById("backBtn").addEventListener("click",function(){
+    if(ovStack.length>1){ ovStack.pop(); renderLevel(); } // torna al livello superiore
+    else { closeOverlay(); }
+  });
 
   // ---- immediate say buttons ----
   document.querySelectorAll("[data-say]").forEach(function(el){
@@ -668,12 +722,19 @@
   });
 
   // ---- speak phrase ----
-  document.querySelector('[data-speak="__phrase__"]').addEventListener("click", function(){
+  var __speakBtn=document.querySelector('[data-speak="__phrase__"]');
+  if(__speakBtn) __speakBtn.addEventListener("click", function(){
     if(current){ say(current); recordPhrase(current); preparing(false); }
     else { say("La frase è vuota"); }
   });
-  document.getElementById("stopBtn").addEventListener("click", function(){ if(synth) synth.cancel(); });
-  document.getElementById("clearHomeBtn").addEventListener("click", function(){
+  var __stopBtn=document.getElementById("stopBtn");
+  if(__stopBtn) __stopBtn.addEventListener("click", function(){ stopHelp(); if(synth) synth.cancel(); });
+  document.getElementById("helpBtn").addEventListener("click", function(){
+    if(helpRepeating){ stopHelp(); }   // secondo tocco: ferma
+    else { startHelp(); }              // primo tocco: avvia
+  });
+  var __clearHomeBtn=document.getElementById("clearHomeBtn");
+  if(__clearHomeBtn) __clearHomeBtn.addEventListener("click", function(){
     if(!current){ return; }
     askConfirm("Cancellare tutta la frase?", function(){
       if(synth) synth.cancel();
@@ -683,7 +744,6 @@
 
   // ---- yes/no mode ----
   var yesno=document.getElementById("yesno");
-  document.getElementById("modeBtn").addEventListener("click", function(){ yesno.classList.add("open"); });
   document.getElementById("closeYesno").addEventListener("click", function(){ yesno.classList.remove("open"); });
 
   // ---- theme toggle ----
@@ -705,7 +765,13 @@
   var kbRows=document.getElementById("kbRows");
   var suggests=document.getElementById("suggests");
   var kbText="";
-  var rows=["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"];
+  var LAYOUTS={
+    abc:[ "QWERTYUIOP".split(""), "ASDFGHJKL".split(""), "ZXCVBNM".split("") ],
+    sym:[ ["1","2","3","4","5","6","7","8","9","0"],
+          [".",",",";",":","!","?","'","\"","¿","¡"],
+          ["(",")","-","–","…","@","/","%","&","€"] ]
+  };
+  var kbMode="abc"; // "abc" lettere, "sym" numeri e punteggiatura
 
   // Starter words (empty field), next-word prediction (after a completed word),
   // and a small vocabulary for completing the word being typed.
@@ -745,7 +811,13 @@
   // Quando la frase esprime la volontà di contattare qualcuno, proponi i NOMI:
   // prima i familiari, poi gli altri contatti. (Nel mockup sono nomi d'esempio;
   // nell'app verrebbero dalla rubrica personale con foto — §7.)
-  var contacts=["mamma","papà","mia figlia","mio figlio","mia moglie","mio marito","il medico","l'assistente"];
+  var contacts=["Anna","Michele","Roberta","Alice","Andrea","Fabrizio","il medico","l'assistente"];
+  function contactFromWord(w){
+    var base=w.replace(/^(con|ad|a|al|alla|allo|ai|alle)\s+/i,"").trim().toLowerCase();
+    for(var i=0;i<contacts.length;i++){ if(contacts[i].toLowerCase()===base) return contacts[i]; }
+    return null;
+  }
+  function bumpContact(w){ var c=contactFromWord(w); if(c){ contactUse[c]=(contactUse[c]||0)+1; LS.set("contacts",contactUse); } }
   var callVerbs={"chiama":1,"chiamare":1,"chiamate":1,"chiami":1,"chiamo":1,"chiamami":1,
     "telefona":1,"telefonare":1,"telefono":1,"parla":1,"parlare":1,"parlo":1,
     "videochiama":1,"videochiamare":1,"senti":1,"sentire":1,"chiamala":1,"chiamalo":1};
@@ -804,8 +876,7 @@
     var base = current;
     if(base==="" || /\s$/.test(base)) current = base+word+" ";
     else current = base+" "+word+" ";
-    var b=w.toLowerCase().replace(/^(con|a|al|alla|allo|ai|alle)\s+/,"");
-    if(contacts.indexOf(b)>=0){ contactUse[b]=(contactUse[b]||0)+1; LS.set("contacts",contactUse); }
+    bumpContact(w);
     setPhrase(current);        // aggiorna campo e ri-renderizza i suggerimenti
     preparing(true);           // frase pronta ma non ancora pronunciata
   }
@@ -835,8 +906,7 @@
     if(kbText==="" || /\s$/.test(kbText)){ kbText=kbText+word+" "; }
     else { kbText=before+word+" "; }
     // personalizzazione: se ho inserito un contatto, conto quante volte è scelto
-    var base=w.toLowerCase().replace(/^(con|a|al|alla|allo|ai|alle)\s+/,"");
-    if(contacts.indexOf(base)>=0){ contactUse[base]=(contactUse[base]||0)+1; LS.set("contacts",contactUse); }
+    bumpContact(w);
     renderKb();
   }
   function renderSuggests(){
@@ -867,12 +937,21 @@
   function renderKb(){ renderField(); renderSuggests(); }
   function buildKeys(){
     kbRows.innerHTML="";
-    rows.forEach(function(r){
+    LAYOUTS[kbMode].forEach(function(r, ri){
       var row=document.createElement("div"); row.className="kb-row";
-      r.split("").forEach(function(ch){
+      if(ri===2){ // ultima riga: tasto modalità a sinistra della Z
+        var mk=document.createElement("button");
+        mk.className="key key-mode"; mk.type="button";
+        mk.textContent = kbMode==="abc" ? ".?123" : "ABC";
+        mk.setAttribute("aria-label", kbMode==="abc" ? "Numeri e punteggiatura" : "Lettere");
+        mk.addEventListener("click", function(){ kbMode = kbMode==="abc" ? "sym" : "abc"; buildKeys(); });
+        row.appendChild(mk);
+      }
+      r.forEach(function(ch){
         var k=document.createElement("button");
         k.className="key"; k.type="button"; k.textContent=ch;
-        k.addEventListener("click",function(){ kbText+=ch.toLowerCase(); renderKb(); });
+        var ins=(kbMode==="abc") ? ch.toLowerCase() : ch;
+        k.addEventListener("click",(function(x){ return function(){ kbText+=x; renderKb(); }; })(ins));
         row.appendChild(k);
       });
       kbRows.appendChild(row);
@@ -886,6 +965,12 @@
   document.getElementById("freqBtn").addEventListener("click", function(){
     var p=topPhrase();
     if(p){ kbText=p+" "; renderKb(); }
+  });
+  document.getElementById("freqDel").addEventListener("click", function(){
+    var p=topPhrase(); if(!p) return;
+    askConfirm("Togliere «"+p+"» dalle frasi più usate?", function(){
+      delete history[p]; LS.set("history", history); renderFreq();
+    });
   });
   phrase.addEventListener("click", openKeyboard);
   phrase.addEventListener("keydown", function(e){
@@ -911,9 +996,55 @@
     if(t){ setPhrase(t); preparing(true); } // staged but not yet spoken
     keyboard.classList.remove("open");
   });
-  document.getElementById("handBtn").addEventListener("click",function(){
-    var left=keyboard.classList.toggle("left");
-    this.textContent = left ? "Mano: sinistra" : "Mano: destra";
+
+  // ---- tastiera fisica (uso su computer) ----
+  function isControl(el){
+    if(!el) return false;
+    var t=(el.tagName||"").toLowerCase();
+    return t==="button"||t==="select"||t==="a"||t==="input"||t==="textarea"||
+      (el.getAttribute && el.getAttribute("role")==="button");
+  }
+  document.addEventListener("keydown", function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;      // lascia le scorciatoie del sistema
+    var kbOpen=keyboard.classList.contains("open");
+    var key=e.key, onControl=isControl(e.target);
+
+    if(key==="Escape"){
+      if(confirmEl.classList.contains("open")){ confirmEl.classList.remove("open"); confirmCb=null; }
+      else if(kbOpen){ keyboard.classList.remove("open"); }
+      else if(overlay.classList.contains("open")){ closeOverlay(); }
+      else if(yesno.classList.contains("open")){ yesno.classList.remove("open"); }
+      return;
+    }
+    if(key==="Enter"){
+      if(onControl && !kbOpen) return;              // lascia attivare il pulsante a fuoco
+      e.preventDefault();
+      if(kbOpen){ var t=kbText.trim(); if(t){ setPhrase(t); say(t); recordPhrase(t); preparing(false); keyboard.classList.remove("open"); } }
+      else if(current.trim()){ say(current); recordPhrase(current); preparing(false); }
+      return;
+    }
+    if(key==="Backspace"){
+      e.preventDefault();
+      if(kbOpen){ kbText=kbText.slice(0,-1); renderKb(); }
+      else { setPhrase(current.slice(0,-1)); preparing(!!current.trim()); }
+      return;
+    }
+    if(key===" "){
+      if(onControl && !kbOpen) return;              // lo spazio attiva il pulsante a fuoco
+      e.preventDefault();
+      if(kbOpen){ kbText+=" "; renderKb(); } else { setPhrase(current+" "); preparing(!!current.trim()); }
+      return;
+    }
+    if(key.length===1){                              // carattere stampabile
+      e.preventDefault();
+      if(kbOpen){ kbText+=key.toLowerCase(); renderKb(); }
+      else {
+        var isFirst=current.replace(/\s+$/,"")==="";
+        var ch=(isFirst && /[a-zà-ÿ]/i.test(key)) ? key.toUpperCase() : key;
+        setPhrase(current+ch); preparing(true);
+      }
+      return;
+    }
   });
 
   setPhrase("");
