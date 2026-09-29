@@ -652,6 +652,7 @@
   // ---- speech ----
   var synth = window.speechSynthesis;
   var voice = null;
+  var saySeq = 0; // conta le frasi pronunciate: serve per l'auto-cancellazione a fine pronuncia
   var helpRepeating = false; // AIUTO: ripete finché non si preme STOP o un altro comando
   function pickVoice(){
     if(!synth) return;
@@ -707,12 +708,15 @@
     try{
       stopHelp();                       // un nuovo comando ferma l'allarme AIUTO
       if(!voice) pickVoice();
+      var myId=++saySeq;
       var u = new SpeechSynthesisUtterance(text);
       u.lang="it-IT"; u.rate=1;
       u.pitch = 1;
       if(voice) u.voice=voice;
       u.onstart=function(){ setSpeaking(true); };
-      u.onend=function(){ setSpeaking(false); };
+      // A pronuncia finita, cancella automaticamente il messaggio dal display
+      // (solo se nel frattempo non è partita una nuova frase).
+      u.onend=function(){ setSpeaking(false); if(myId===saySeq){ setPhrase(""); preparing(false); } };
       if(settings.feedback) beep();
       // iOS: se qualcosa è già in riproduzione, annulla e riparla con un piccolo ritardo
       // (cancel() subito prima di speak() su iOS "mangia" la frase). Se non c'è nulla in corso,
