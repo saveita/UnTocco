@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-title" content="UnTocco">
+<meta name="theme-color" content="#e7ebf0">
+<title>UnTocco — La tua voce</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+  [hidden]{display:none!important}
+  img{max-width:100%}
+  :root{
+    --ground:#e7ebf0;
+    --frame:#c3cad4;
+    --panel:#ffffff;
+    --panel-sunken:#f1f4f8;
+    --ink:#182231;
+    --ink-soft:#516074;
+    --hair:#d7dde5;
+    --neutral:#33506e;
+    --neutral-ink:#ffffff;
+    --yes:#127a3e;
+    --yes-ink:#ffffff;
+    --no:#bd3124;
+    --no-ink:#ffffff;
+    --maybe:#b9820a;
+    --maybe-ink:#20170a;
+    --urgent:#d21f2c;
+    --urgent-ink:#ffffff;
+    --shadow:0 2px 0 rgba(24,34,49,.14),0 10px 24px rgba(24,34,49,.12);
+    --shadow-press:0 1px 0 rgba(24,34,49,.18);
+    --r:20px;
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --ground:#0c1015;
+      --frame:#04070a;
+      --panel:#1b2330;
+      --panel-sunken:#141b26;
+      --ink:#eef2f7;
+      --ink-soft:#9fb0c4;
+      --hair:#3d5069;
+      --neutral:#5c82ad;
+      --neutral-ink:#08111c;
+      --yes:#2ea45f;
+      --yes-ink:#04140a;
+      --no:#e5584c;
+      --no-ink:#170606;
+      --maybe:#e0a92c;
+      --maybe-ink:#1a1305;
+      --urgent:#f24a55;
+      --urgent-ink:#1a0406;
+      --shadow:0 2px 0 rgba(0,0,0,.4),0 12px 28px rgba(0,0,0,.45);
+      --shadow-press:0 1px 0 rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0c1015;
+    --frame:#04070a;
+    --panel:#1b2330;
+    --panel-sunken:#141b26;
+    --ink:#eef2f7;
+    --ink-soft:#9fb0c4;
+    --hair:#3d5069;
+    --neutral:#5c82ad;
+    --neutral-ink:#08111c;
+    --yes:#2ea45f;
+    --yes-ink:#04140a;
+    --no:#e5584c;
+    --no-ink:#170606;
+    --maybe:#e0a92c;
+    --maybe-ink:#1a1305;
+    --urgent:#f24a55;
+    --urgent-ink:#1a0406;
+    --shadow:0 2px 0 rgba(0,0,0,.4),0 12px 28px rgba(0,0,0,.45);
+    --shadow-press:0 1px 0 rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+    background:var(--ground);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    margin:0;padding:0;
+    height:100vh;height:100dvh;overflow:hidden;
+  }
+  .wrap{max-width:none;margin:0;height:100%}
+  /* barra comandi minima dentro l'app */
+  .topbar{display:flex;justify-content:flex-end;gap:8px}
+  .theme-toggle{
+    font-family:inherit;font-size:13px;color:var(--ink-soft);
+    background:var(--panel);border:1px solid var(--hair);border-radius:999px;
+    padding:6px 14px;cursor:pointer;
+  }
+  .theme-toggle:hover{color:var(--ink)}
+  .voice-wrap{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);
+    background:var(--panel);border:1px solid var(--hair);border-radius:999px;padding:4px 10px 4px 12px}
+  .voice-select{
+    font-family:inherit;font-size:13px;color:var(--ink);background:transparent;
+    border:none;cursor:pointer;max-width:150px;padding:2px 4px;
+  }
+  .voice-select:focus-visible{outline:3px solid var(--neutral);outline-offset:2px;border-radius:6px}
+
+  /* app a tutto schermo (niente cornice) */
+  .ipad{background:none;padding:0;box-shadow:none;position:relative;height:100%}
+  .ipad::before{display:none}
+  .screen{
+    background:var(--ground);
+    border-radius:0;
+    padding:14px;
+    display:flex;flex-direction:column;gap:12px;
+    height:100%;
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* Compose bar */
+  .compose{
+    display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;
+  }
+  .btn-clear{background:var(--panel);border:2px solid var(--no);color:var(--no);min-width:92px}
+  .btn-clear .ico{font-size:26px;color:var(--no)}
+  .btn-clear .lab{font-size:13px;letter-spacing:.2px}
+  .phrase{
+    background:var(--panel);border:1px solid var(--hair);border-radius:var(--r);
+    padding:16px 20px;min-height:78px;display:flex;flex-direction:column;justify-content:center;
+    box-shadow:var(--shadow-press);cursor:pointer;position:relative;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .phrase:active{transform:translateY(1px)}
+  .phrase:focus-visible{outline:4px solid var(--neutral);outline-offset:3px}
+  .phrase .hint{
+    position:absolute;top:10px;right:16px;display:flex;align-items:center;gap:6px;
+    font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .phrase .hint .ico{font-size:20px}
+  .phrase .status{
+    font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+    color:var(--maybe);display:none;margin-bottom:4px;
+  }
+  .phrase.preparing .status{display:block;animation:pulse 1.1s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.4}}
+  .phrase .text{font-size:26px;font-weight:700;line-height:1.15;text-wrap:balance}
+  .phrase .text.placeholder{color:var(--ink-soft);font-weight:400}
+
+  .btn{
+    font-family:inherit;border:1px solid var(--hair);border-radius:var(--r);cursor:pointer;
+    font-weight:700;color:var(--ink);background:var(--panel);
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    padding:14px;transition:transform .05s ease, box-shadow .05s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn:active{transform:translateY(2px);box-shadow:var(--shadow-press)}
+  .btn:focus-visible{outline:4px solid var(--neutral);outline-offset:3px}
+  .btn .ico{font-size:30px;line-height:1}
+  .btn .lab{font-size:16px;letter-spacing:.3px}
+
+  .btn-speak{background:var(--neutral);color:var(--neutral-ink);min-width:150px}
+  .btn-speak .ico{font-size:34px}
+  .btn-speak .lab{font-size:22px;letter-spacing:.5px}
+  .btn-stop{background:var(--panel-sunken);min-width:96px}
+
+  /* Predictive words during composition (home) */
+  .home-suggests{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}
+  .hsugg{min-height:54px;background:var(--panel);flex-direction:row}
+  .hsugg .lab{font-size:18px;font-weight:700;letter-spacing:.2px}
+  .hsugg[disabled]{visibility:hidden}
+
+  /* Intentions */
+  .intentions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px}
+  .intent{min-height:104px}
+  .intent .ico{font-size:38px}
+  .intent .lab{font-size:22px;letter-spacing:.5px}
+  .intent.yes{background:#2e6b4e;color:#fff}
+  .intent.maybe{background:#8a6a1e;color:#fff}
+  .intent.no{background:#313d4d;color:#fff}
+  .intent .ico{width:66px;height:66px;border-radius:50%;border:3px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:34px}
+  .intent .ico svg{color:#fff;stroke-width:2.4}
+  .intent .lab{color:#fff;font-size:24px;letter-spacing:.6px}
+
+  /* Middle: contexts + side */
+  .middle{display:grid;grid-template-columns:210px 1fr;gap:14px;flex:1;min-height:0}
+  .middle.nohelp{grid-template-columns:1fr}
+  .contexts{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:26px}
+  .ctx .ico{font-size:40px}
+  /* icone disegnate (SVG) dei contesti */
+  .ico svg,.em svg{width:1em;height:1em;display:inline-block;vertical-align:middle;
+    fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--neutral)}
+  /* icone immagine (PNG) */
+  .ico .icoimg,.em .icoimg{width:1.6em;height:1.6em;display:inline-block;vertical-align:middle}
+  .theme-toggle .icoimg{width:22px;height:22px;display:inline-block;vertical-align:middle}
+  .dpad{display:inline-grid;grid-template-columns:repeat(3,1em);grid-template-rows:repeat(3,1em);
+    font-size:.5em;line-height:1;place-items:center;vertical-align:middle;font-weight:700}
+  .dpad .u{grid-column:2;grid-row:1}
+  .dpad .l{grid-column:1;grid-row:2}
+  .dpad .r{grid-column:3;grid-row:2}
+  .dpad .d{grid-column:2;grid-row:3}
+  .ctx .lab{font-size:17px}
+  .side{display:grid;grid-template-rows:1fr;gap:12px}
+  .btn-mode{background:var(--panel);border:2px solid var(--neutral)}
+  .btn-mode .ico{font-size:34px;color:var(--neutral)}
+  .btn-mode .lab{font-size:16px}
+  .btn-help{background:#ab3d34;color:#fff}
+  .btn-help .ico{width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
+  .btn-help .ico svg{color:#fff;stroke-width:2.2;width:46px;height:46px}
+  /* category tiles: icon top-left, title + subtitle below */
+  .ctx{flex-direction:column;align-items:flex-start;justify-content:flex-start;text-align:left;padding:16px 18px;gap:12px}
+  .ctx .ctxicon{width:106px;height:106px;min-height:106px;border-radius:24px;background:rgba(255,255,255,.17);display:flex;align-items:center;justify-content:center;font-size:62px}
+  .ctx .ctxicon svg{color:#fff;stroke-width:2}
+  .ctxtext{display:flex;flex-direction:column;gap:2px;margin-top:auto;width:100%}
+  .ctx .lab{font-size:22px;line-height:1.1;color:#fff}
+  .ctx .sub{font-size:13px;font-weight:400;color:rgba(255,255,255,.82);letter-spacing:.2px}
+  /* message card header */
+  .msgcard{background:var(--panel);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-press);display:flex;align-items:stretch;gap:12px;padding:12px 14px}
+  .msgcard .phrase{flex:1;background:transparent;border:none;box-shadow:none;padding:6px 8px;min-height:60px;justify-content:center}
+  .msgcard .phrase:active{transform:none}
+  .phrase .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px}
+  .msgactions{display:flex;align-items:center;gap:10px}
+  .msgbtn{font-family:inherit;font-weight:700;cursor:pointer;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:9px;-webkit-tap-highlight-color:transparent;transition:transform .05s ease}
+  .msgbtn:active{transform:translateY(1px)}
+  .msgbtn:focus-visible{outline:4px solid var(--neutral);outline-offset:3px}
+  .msg-trash{width:66px;background:var(--panel);border:2px solid var(--maybe);color:var(--maybe)}
+  .msg-trash svg{width:27px;height:27px;color:var(--maybe);stroke-width:2}
+  .msg-speak{min-width:158px;background:var(--yes);border:none;color:#fff;font-size:23px;padding:0 24px;box-shadow:var(--shadow)}
+  .msg-speak svg{width:29px;height:29px;color:#fff;stroke-width:2.2}
+  .btn-help .ico{font-size:40px}
+  .btn-help.repeating{animation:pulse 1s ease-in-out infinite;outline:5px solid var(--urgent);outline-offset:3px}
+  .btn-help .lab{font-size:22px;letter-spacing:1px}
+
+  /* Permanent quick bar */
+  .quickbar{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .quick{min-height:66px;background:var(--panel-sunken)}
+  .quick .lab{font-size:15px;letter-spacing:.3px}
+  .quick .ico{font-size:22px}
+
+  /* Context overlay */
+  .overlay{
+    position:absolute;inset:0;background:var(--ground);
+    padding:16px;display:none;flex-direction:column;gap:12px;z-index:5;
+  }
+  .overlay.open{display:flex}
+  .ovhead{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+  .btn-back{background:var(--panel);min-height:66px;min-width:150px;flex-direction:row;gap:10px}
+  .btn-back .ico{font-size:26px}
+  .btn-back .lab{font-size:18px}
+  .ovtitle{font-size:30px;font-weight:700;display:flex;align-items:center;gap:14px}
+  .ovtitle .em{font-size:42px}
+  .ovgrid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:26px;flex:1}
+  .need{background:var(--panel);min-height:120px;gap:12px}
+  .need .ico{font-size:56px}
+  .need .lab{font-size:25px;line-height:1.15;text-wrap:balance}
+  .need small{display:block;font-weight:400;color:var(--ink-soft);font-size:17px;margin-top:4px}
+
+  /* Keyboard */
+  .keyboard{
+    position:absolute;inset:0;background:var(--ground);z-index:7;
+    display:none;flex-direction:column;padding:14px;gap:10px;
+  }
+  .keyboard.open{display:flex}
+  .kb-top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:stretch}
+  .kb-field{
+    background:var(--panel);border:1px solid var(--hair);border-radius:16px;
+    padding:12px 18px;display:flex;align-items:center;min-height:64px;
+    font-size:24px;font-weight:700;box-shadow:var(--shadow-press);
+  }
+  .kb-field .caret{display:inline-block;width:3px;height:26px;background:var(--neutral);margin-left:2px;animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+  .kb-field.empty{color:var(--ink-soft);font-weight:400}
+  .kb-speak{min-width:130px;background:var(--neutral);color:var(--neutral-ink)}
+  .kb-speak .ico{font-size:28px}.kb-speak .lab{font-size:18px}
+  .suggests{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .sugg{min-height:56px;background:var(--panel-sunken);flex-direction:row}
+  .sugg .lab{font-size:19px;font-weight:700}
+  .sugg:empty{visibility:hidden}
+  .freq-row{display:flex;gap:8px}
+  .freq{
+    flex:1;background:var(--panel-sunken);border:2px dashed var(--neutral);
+    min-height:58px;flex-direction:row;gap:12px;justify-content:flex-start;padding:10px 18px;
+  }
+  .freq-del{
+    background:var(--panel);border:2px solid var(--no);color:var(--no);
+    min-height:58px;min-width:58px;font-size:24px;
+  }
+  .freq .ico{font-size:22px;color:var(--neutral)}
+  .freq .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft);font-weight:700;white-space:nowrap}
+  .freq .lab{font-size:20px;font-weight:700;text-align:left;text-wrap:balance}
+  .kb-rows{display:flex;flex-direction:column;gap:26px;flex:1;justify-content:stretch}
+  .kb-row{display:flex;gap:26px;justify-content:stretch;flex:1}
+  .key{
+    flex:1;background:var(--panel);border-radius:14px;box-shadow:var(--shadow);
+    font-family:inherit;font-weight:700;font-size:clamp(28px,4.2vw,52px);color:var(--ink);
+    border:1px solid var(--hair);cursor:pointer;min-height:56px;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .05s ease,box-shadow .05s ease;-webkit-tap-highlight-color:transparent;
+  }
+  .key:active{transform:translateY(2px);box-shadow:var(--shadow-press)}
+  .key:focus-visible{outline:4px solid var(--neutral);outline-offset:2px}
+  .kb-actions{display:grid;grid-template-columns:1.2fr 1fr 1fr auto auto;gap:10px}
+  .key-mode{color:var(--neutral);border:2px solid var(--neutral);font-size:20px!important;flex:1.3}
+  .kb-actions .btn{min-height:64px;flex-direction:row;gap:10px}
+  .k-space{background:var(--panel-sunken)}
+  .k-back,.k-backword{background:var(--maybe);color:var(--maybe-ink)}
+  .k-back .ico,.k-backword .ico{font-size:24px}
+  .k-back .lab,.k-backword .lab{font-size:16px}
+  .k-clear{background:var(--panel);border:2px solid var(--no);color:var(--no)}
+  .k-clear .lab{font-size:15px}
+  .k-close{background:var(--panel);min-width:120px}
+  .k-close .lab{font-size:16px}
+  /* left-hand mode mirrors the action row so the big keys sit under the working hand */
+  .keyboard.left .kb-actions{direction:rtl}
+  .keyboard.left .kb-actions .btn{direction:ltr}
+  /* Confirm dialog (sostituisce window.confirm, bloccato in sandbox) */
+  .confirm{
+    position:absolute;inset:0;z-index:9;display:none;
+    align-items:center;justify-content:center;padding:24px;
+    background:rgba(10,15,22,.55);
+  }
+  .confirm.open{display:flex}
+  .confirm-box{
+    background:var(--panel);border-radius:24px;box-shadow:var(--shadow);
+    padding:26px;max-width:560px;width:100%;display:flex;flex-direction:column;gap:20px;
+    border:1px solid var(--hair);
+  }
+  .confirm-msg{font-size:26px;font-weight:700;text-align:center;text-wrap:balance}
+  .confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .confirm-actions .btn{min-height:88px;flex-direction:row;gap:10px}
+  .c-cancel{background:var(--panel-sunken)}
+  .c-cancel .lab{font-size:20px}
+  .c-ok{background:var(--no);color:var(--no-ink)}
+  .c-ok .ico{font-size:26px}
+  .c-ok .lab{font-size:20px;letter-spacing:.3px}
+  .hand-toggle{
+    position:absolute;top:14px;right:14px;z-index:2;
+    font-family:inherit;font-size:13px;color:var(--ink-soft);
+    background:var(--panel);border:1px solid var(--hair);border-radius:999px;padding:6px 12px;cursor:pointer;
+  }
+
+  /* Indicazione voce che parla */
+  .speakbar{
+    position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:8;
+    background:var(--neutral);color:var(--neutral-ink);border-radius:999px;
+    padding:8px 20px;font-weight:700;font-size:16px;letter-spacing:.4px;
+    box-shadow:var(--shadow);animation:pulse 1s ease-in-out infinite;
+  }
+  .speakbar .ico{font-size:18px}
+  /* Flash di conferma visiva dopo un comando */
+  .cmd-flash{outline:5px solid var(--neutral)!important;outline-offset:2px!important}
+
+  /* Pannello opzioni caregiver */
+  .options{
+    position:absolute;inset:0;z-index:10;background:var(--ground);
+    display:none;flex-direction:column;padding:16px;gap:14px;overflow:auto;
+  }
+  .options.open{display:flex}
+  .opt-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .opt-title{font-size:24px;font-weight:700}
+  .opt-body{display:flex;flex-direction:column;gap:22px}
+  .opt-sec{background:var(--panel);border:1px solid var(--hair);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .opt-sec h3{margin:0;font-size:16px;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-soft)}
+  .opt-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .opt-row label{font-size:15px;min-width:180px}
+  .opt-list{display:flex;flex-direction:column;gap:8px}
+  .opt-item{display:flex;align-items:center;gap:8px}
+  .opt-item input[type=text]{flex:1}
+  .options input[type=text],.options input[type=number],.options input[type=password],.options select{
+    font-family:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--hair);
+    border-radius:10px;background:var(--panel);color:var(--ink);min-width:0;
+  }
+  .opt-btn{
+    font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;
+    background:var(--panel);color:var(--ink);border:1px solid var(--hair);
+    border-radius:10px;padding:10px 16px;
+  }
+  .opt-btn.primary{background:var(--neutral);color:var(--neutral-ink);border-color:var(--neutral)}
+  .opt-btn.danger{background:var(--panel);color:var(--no);border:2px solid var(--no)}
+  .opt-check{display:flex;align-items:center;gap:10px;font-size:16px}
+  .opt-check input{width:24px;height:24px}
+  /* Tastierino PIN */
+  .pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px}
+  .pinpad .opt-btn{min-height:64px;font-size:24px}
+  .pin-display{font-size:32px;letter-spacing:8px;min-height:40px;text-align:center;font-weight:700}
+
+  .note{margin-top:16px;color:var(--ink-soft);font-size:13.5px;line-height:1.6;max-width:74ch}
+  .note b{color:var(--ink)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:13px;color:var(--ink-soft)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:13px;height:13px;border-radius:4px;display:inline-block}
+  .voice-off{display:none}
+  body.no-voice .voice-off{display:inline}
+
+  @media (max-width:820px){
+    html,body{height:auto;overflow-y:auto;overflow-x:hidden}
+    .ipad{height:auto}
+    .screen{aspect-ratio:auto;height:auto;min-height:100dvh;padding-bottom:24px}
+    .middle{grid-template-columns:1fr;flex:none}
+    .side{grid-template-rows:auto;grid-template-columns:1fr}
+    .btn-help{min-height:150px}
+    .contexts{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(150px,auto)}
+    .compose{grid-template-columns:1fr}
+    .msgcard{flex-direction:column;align-items:stretch}
+    .msgactions{justify-content:flex-end}
+    .msg-speak{flex:1}
+    .quickbar{grid-template-columns:repeat(2,1fr)}
+    .btn-stop{grid-column:2}
+    /* Tastiera e sotto-menù: altezza schermo fissa e scorrevole (niente tasti giganti) */
+    .keyboard{position:fixed;height:100dvh;overflow-y:auto;padding:10px;gap:8px}
+    .kb-rows{gap:7px;flex:none}
+    .kb-row{gap:5px;flex:none}
+    .key{min-height:48px;font-size:24px;border-radius:9px}
+    .suggests{grid-template-columns:repeat(2,1fr)}
+    .kb-actions{grid-template-columns:repeat(2,1fr);gap:8px}
+    .kb-actions .btn{min-height:52px;font-size:15px}
+    .k-space{grid-column:span 2}
+    .overlay{position:fixed;height:100dvh;overflow-y:auto}
+    .ovgrid{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(118px,auto);flex:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="ipad" role="group" aria-label="UnTocco">
+    <div class="screen">
+
+      <div class="topbar">
+        <button class="theme-toggle" id="themeBtn" type="button">Tema</button>
+        <button class="theme-toggle" id="gearBtn" type="button" aria-label="Opzioni caregiver"><img class="icoimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAABRmklEQVR42u29ebxeVXkv/n3WWnu/08k5J/PIkASSACFhBgERRFBpUa8KtdWqHRyudrg/i623eiv0qrfeaq9TFS4dpNZWpdcJRQRRCigzJgEMIZAQyJxzcsZ32HuvtZ77x57W2u8bKy1Wej+/9JMaknPO+757PesZvs/3+T6E/0C/mJmAGwVwBYjI9P/77BLEwRKD3gYS6hKAZ0HiFJA6x+iYhSACAwwLgEFgMABigIkAUPZzwFKFxJzcSwabINQQW32bRLAFYbKfaGj/gPcmgRsBXGGJiP+jPFP6j3HoIADkHjozE3qTx6Le2GC1filIrrRGr4UQKwEbKDWUfyWYDQjC+bTs/B78ONhakFAABADAmA6YKWFrdgqptrFJdqow/H6v191Sr48+7R56agzpC7zQjYFe4AcvKodeQ9I9zUq6jK29nBnLVdBcUH6XyX5LAMbAJmhHLGIDmu1pTLUTzPQMerFBkhgkRsMyQwmBQAnUAoWhhsJwM8BIXaEWCG7WpJVKAlAyfQ3hvU+ddMaI7B4S6iZh+GYEjYeJKKoYwwvWK7zgDIA/+EGBq68ubnv6ADtnWG1fwxAvtxYbg7ApyptsDUCIkxjj0x3aPd6lbXvbtG98BrvHZnFgqovpToxubBBpINGAtQCDwWzBYBAIgtKjVZIQBgKtmkSjrjB3Th1HzR/C0tEmVi0Z4lWLh3jhSMhzWvXM0EhmDgpx3LFSYrMkfBcCXweaD3qf4+qrma65xv7/BvAz3HjmJ2rQyy8DifewwPlE9ezANQBhEm1p7/gMbd87Q5ufnsC2PRPYdXAWUzNddCINaxnE6fFIklBSQEgCkYAQBHJifhomGGDAWgvLADPDWMBYC2MZDEaoJIYbARbNbWDVkmGcfOxcrD9mlI9dNMKjQzVOLSJ1FNb2AMbdlpO/UGr/zURroheiR6AX3sG3l8PiP1vGlULK44EaYHuAEKbTs/T4nkl6cNtBeujJMTyxZwYTsxE0M5QUCKSAFIAkgDg91PRcs/+lIplIPzqlH58otS3OnQosQARBlH8JLAhsAW0NEm2hTXp+jZrCivlNbFg5D2evXcQbj53Pyxe2MmNQYI5hrd4uSXwFwn6OqLXnhWQI9As+eCIiCwDt9tjyeth4ByDeJlR9SfpVEcOCn9jbFnf+ZA/ueGQ/tj0ziZluDCUItVAhkBJClCdo07welP83Z8kec/lxCc7hU99DKA0h/zKR1QvFt6V/YIYxFnFiEGsLJQWWzmvgrHULceH6FTh91Tw7OlwjICAA0Lq7Xwi+vtfrXtdqLcgNQfwik0X6BR2+yA+eub0CVrzDWLxNqvriNImDibWh+7ePiW/dtxP3bN2P8akYQgrUlYAQ6VtP3TYXB1ocZXaozOmxMdvKgabfS5SFgsx+QG5QQOoykP18UPE1yH82MyjLHYjSn6mNRTexCCRhzZIhnLd+KS497Ri77ugRThNJgk66B5Tk6yFwHVFrd/WZ/D9rAK67Z/6ggHnfWyyJPxMiXJRl8KbdS8T3Nh2gb963C1uePow4sagHAkqkD9hm8ZjzG82cHnjm0bO7X5wig4vbWhT9aa2feQ4UPoNyz+C4AGb/caVJ44BflouoIohgmRElBlFssGC4gZdsXI7XnnsUn7J6oQUCCQBGRwel4vcBf3YD0TX2FxEW6Bdx6+N4+iVS1j4kBJ3PTCCC6fRi8d0f76Yv37UDP9k1BYJAs64gCUUSlidqRdLm3GjvQ1F+sOVzJC6O1LnN5bUnz7+XIaC49LmXKLyHayC5UVAZKvLwQoA2QDdOMNRQuHDjCrzxJcfx+mPn2dQjaFhr7zYm+kAYDv/zv7c3oH+nw5dEZHbu3Fk/+uhFV4PV7woZNmFjCwi6/ZHd9FffeRxbnp6AUgLNMAAhj9/ls+fiVnIVtum/ycVrl5+U8v9mBlNa+uVfk4YCLg7ZezJHvI/s/zuV7819xIIIQgDWMtqRxnCzhleftRxvuHANH7VomAEptI46CubT2H3walq5spc/s//QBpC5fElEmntTa60KvyRk7RS2GiSkeXLvlLz+lq34zoO7YC0wVA+ch0jZwbBzo9O3TGwdl+z+S2Yo7NxsytJ/L7qzC/tmr1HcW//mO8kDM/f9a2FkWS5QJqL+4809hBAEay26cYKlcxt440tPwOvPX2katUACAsb0NkkZv4FoZBszKwDm5xkS6N/D5TN332mtfL8QwQogMe2eFf9w55P0d7dtw9hUhOFmCEIa3/MKLQ/DpYenIuQLMCAIRYKPLKFzQoPjswf8mQZfa4L39eR+b55HZP9CcJNBZIlptYpgLyxxllQSpYYQ6xSVPHPNIvzOL5/Epx+/yAJCGh3vlmQ/TKpx7c87JNDP5/B/oIgu0sxT860N/0iI4L3ZS5lHnx6X//PrW/DAtjG0QolAEqxlx5tycaB9Z1Jx+jTgEAlOTX8k303uAfounbyATxXPktuhHx9yL4JKAlp4Js+DuU4lDVedKEEzVHjrJevwlovXmHqtJgEDa5M/FyL+KNHIeP5MX/AGkMcu5ukF1qibhGycY3RkSAj60j8/KT5382OY6hi06iFgbRrns0y+SNzYzcfIb9y4ZRvcw7DF7WbYAWc/qNqnvv/2fIWXIzghx7Ea11QYqSEUOYVbibhGzP7rS5Eijp3I4Ox1S/FHr99gj18+lwEhre7eK5S+nGh47OeRF9DzfPgqjffTr0XQ+BCEOgHQemK2pz721UfwrfueQa0WQBFgjPXvsvtQ6ae/UwJ5dsFOXPcTQM5c7087+Arq4x4OkZdfuCWmX4UAaTXDA0IAoS9TrHiG/JcgQrubYOFIHe953UZcduaxGhDKWr3V2u4HgmD4q/kzfsEZQP7GdDRzpVThFyFCBRjzk13j8k//8SE89uwUhuo1AAxr7IB8mr1k6UgPrd8YKq6VsgjNAERZ/zP8coCASr5QTRD7cwWi/J1SBVg6YlbhGQs82ypzCjhGKoVAZAysZfzmJSfinZetM4EKpDGxBuI3KjXnK8+nEdDzevP1zJUW4d8bZhUoaW/ftFt+6B8fxkQ7RrMWwloLMMFmCRahcjDV7HlwoPbefV+15hwqZTeYmX/GR8GVH059r82uNyjBBSdX6U8Us9hQeS/9nqCoJjKDmOlovOrMFfjjXzvFzGk2hDFGA/Gbnk8joOfv5k9eSbLxRcOkAsX2y3fuEH/+fx4BgRAoUbh8/zBSt+nm3Fw5BC/Ryx9i/tXsPkQ/b6+emoslpD+GyqSOKr6GjxAmUkIRhGO65DsfgHjA4VefWb8B+6+fGZkgTM/2cM4JC/Ght5xjl84bEVrHmuj58wT0fN18w8EXGVIpAfu5mx8V192yFWFQg6QUAKneRHbyudL6uZLYlfHeNxw/Q7dsC1w/x+dT4yjzLsvsI4SMImfgn7nK9vsC9C9UlOx6pUrTyUssizdQrV0IUhBmOhHWHDUPH33rOfb45XNFomMtnicjoH/D4afZfub2AVZCEn/ya4+I67/7OIYa9fTGWFveavYz69JRcn5e8HJ75yALlM5p2vCgMrCaQTIGeJZqlv4cHhhVbTD1Ce6LHcmoBtUdqOQhZS6U/hAGIJXAbNfg6PlD+Iu3nWnXHr2AtNaaqAgH/+rqgP5Nh5+0X21J/pNhoQJF9lPf2CL+9y2PY04jRF7dlbW9i7PhX346RwzTXLgPv2/jxtNqcVZ90P5NLngCILDlAg2u5odV4+KMWEpHRCT8TNHvSvpIJPOAosEJa1JKdKMEy+c38fHffpFdd9R8YXSsJczrKWh9419rBPSvOHwiImaeXmCtukeI+nFAYq799k/kX968Fa1aWDRtyMPvnUrL681XIrfTq+l7gzS4aiObfw/7bd3M7VLFTbshwK0bS/viwXRR6n8T1Acu04AGQj/GwFkMEFkDKX9dGuhy0r8VUqDTS3Ds4mF86h3nmmMWjUiddJ9UPf0iGh4ey8/muZyneG6H/0EBgJgn58EE3xSicRyg7Re//6T8zLd+glYtKG9o9THSoPqZC65GXsszlUle7gadgj+lecFtCac3uHyt0vXk5xVri15iEOn0d5xYRAkjSix6sUYvStDNfvcSDWOzxNSyxx9mlEko9300diI4F02ngVWNl+mUz4NIVEAQvzw1xqJZC7HjwCze/3cPysmZGauCxnG6EXyTeXJeejYfFD83D5AnHCZpf0yo5h8AWt/y0LPqj2+4D0oISEGwtpruUsnAqZZUzA6CNiAGVl04DXCxOQfA6xwyBBG0sUi0xaLRJuY0w+JrRU4EyTqO1jI46+dba7Fvoo12z6BVDxx8sb/sLMMA9YWxvK9BTpziIz5+HlTzDDwhBkFKienZGK84dSn+x2+epcOgrnTc/nhQG7rquSaF9Jzjvp59m0H9OinJbNpxQL3rsz9CFBuEkgoGzsAfywzuq33LG8LM/gMmqvTSuED2+ksq690rQUCkNeYNN/COyzbg3HWL0awFni3mgZ9RsnvAaem1e2wGN9z2OG7btBe1UKU0YgdgYvjGRv2ZYfEsSuNxjDT7M3ssJDpiFdEXfpggJGG6E+E3XroSV11xptYGktB5h1LD1z+XfIB+xsMXABjRzDqjardLGSw9eHjKvv0zd4sdB2bRChWsk+C4eL3bKPFDgP9AKiiL87Ockq3SBGLv1nDRabPWIgwIf/GOC3HW8YvBbMspoEoazk6fIf35AkQSDOAP/+oefHfTbrRqMgOx4BBB2C9TnUQn/Tw2+08n9lebUN7n5QxOPhJCSn0dSyJCN4rxgTecaq948VoRJ/E+tvHFtdqcx+HwLf9NOYAzmaOMFF+WMlyaJIn5yFc2ie17p9GqBTB5fz7jZREIxFzprjnNWCo7by6UWuZkzvd6CV+eBGSv47B6Kf87QZiNNC4941icdfxidKMEljnLEwBj0lhqjIHJmlF5xZLTwaMkAZjx1kvWohlKaMvFiVWNljMrd1MvZvZBKe+QHeiQuC9ZTLkJbtaRcR2dqsHxm6iFAf7XNx4TD20/YMKgtlRAfhmASvMBpucjCSQiMjbu/KlUrZMBo7/w/cflbZv3YqQZwhrrxGu37KPS+jkrgcADXrHk+qRfR156VJZLXDT9uM+H2fQQcoAGhA3HzAczoCRDUF6VlEaXM4DKv6PCH0sBaGOxbH4TS0ZDxHFS9gFyS7GOJytyEBqIP7AF2KIkoSJ/Lzn5gQsjseyDRJ7LIMdusvcSSIFeZPGxrz0iJ2dndVBrnhz3On+ahYB/mwHkRATmznks1O8B1j64/aC8/rvb0ArDLNHhik9jpz3LKVeSOCNg0gB2TskAIRdbcRsuKOnbeRMlN6iChSfKhxYoiaFaUGTW6ZnZPnBGZLcrJ5uWWUT6/uqBRKumYIwBLBelW/Exss8tCCCRziL4ObwoQgRV2MR5lUAOOkYus9mpONz75fkMImjLaNYDbH12AtfdvFUCxpJUv8fcOS89Oxb/KgPI3QczizjGX0gVNme7Xf7EN7ZQJ2JI4dzK6pOtcPA5a5f2px8+pQvkZ8tublWUfJXyskCQnX8PA4XROXXvOKmMUOWBUAlR5eQMKvIToB4qjLbCdFA092nsYxpwegclCEWOXyP/5lP5dew+r5xmnqfKOXzMwrsQLq6Rw97GWjTrAb567y66+5HdHARhsxfhL/LD/2mhQPwLrt8a03uzVMFZgLY33LZdPvzUYTRrMo2dA8+eUD1TGgiM+O3fPEazc+OLbxFUZtwARP7Fmb90MQNmoBYKDDWCMiBRJZSwb4R5slntGhIRRltBUaGkCbhbepYW5WIZlHsXon7807Fq8pIg8ppS/Ulxpe2YRwfOAi4ztGF88ltb5cRM24ZBcFYv7r05SwSfmwHkWT/z7BJr8XEpFD+y4xC+8P0n0QoV2BrH5TuxjrkoyQpypvfAK7y8sluSPTSU3Hwg9avFwy3rffZhveK18o5gqCTqofQPjrmvL8/Wh2WK8gzl97XqQXY4wnPRXKF6kQtEeb0PhsjIHqhUCgX6RyiSPaokuGkCwT6iyS6NPX1HxjJqocTjz07ir2/dBiEUE8THmWeXpB9/cCgY+Jc33ngjERFrTe8Kgvq8RMf2L2/eJqajBErAAXscHjz13/wqr4K5NArORRmyfxNZ5pskFtpYkBAg4TSKPT8uigeVJlm2CDvMjEao0KwFMI6HEIQyUyffDss6npxRsfSLh1s1kBAF7lweVOm6C4efx/esASZEejC9RCPWNgWgwE414FYPziyjkwiWVcARWsoFPsKwFmg1Qvyfu3eKh7fvtbUwnBfH9C4i4htvvHGgF1CD4d4rLLfbyyIr3qkAvn3zs3TXT/ZhuBGUzF3XfWexUYCQIQZpRV3xth60k9/8DHzpJRpKCqxYOITEWOw93AaRQCMQabs3fzVBLqBeTbqLrwmk0xr2yqcSufNQOvJxOMp+dhgqMAhCiGxOgRwUk+FOleZzQ0IwtNboaoPFc1tYMjqE6W6MZ8dmQEQIFWVVgUBJKqV/kQrn5R0O5S33kgCn/YIowV/fupXWH7uQQeqdh9rtaxc0m/uYPyiI/PF01f+KVxMR2SRqv7MW1hfOdrvmhtufkpKoQoPgAYBFlVM3gL7DXo0EIQQ6cYx1R43iXZefirUrRmEt48En9uOvb3kE2/fOYk4rdH42gcmWPydPjNgiig3GZ2NcePJSzGmEMJYhM1qY9frv1edLHkUsdTJpKDjpmAVQZDE120WrWYMSosALipDHtoC1BTFmuxFGhhr4rVeuxytOPxYLRxvoRBo/fGwvPv2Nh3F4JkIta5q5JbRnrMw/hW9AA4J6Zt7GolEPcM+2Q+KOLc+YS09fvXDIxO8koj9Jw8A1R7avvOxrt9vLlKJNYVhb8H9++CR/8O8fFnMaCtb48ZcGQneO/2fOam3Rj6Bzite3owSrlo3is+++EMvmtWCMhhACRAIHp9r4xD9twrcfegZhPUQgRenu8xtoLdrdCJGxWLpgDs5fvxzvuGw9ls9twbAppn/SR2YzAyKfpMGDcHqGtSl//3s/3o1v/GgHNj89jumeRb0WZO8llZ9ha0DMSLRGuxfjnBNX4P973enYcOx8ABbaGAgwhAzx4+378fvX3YmZnkU9SL1LHtzJg835XwBv+YhNpvS5apy6cthe97sXkSSMTSbmlIWt1t7qjEHVACQAq3XvvytVf/9sp2N++1N3yMeenUErTF0gOSV/0Y7NcHIemOz5+Gv+7AURYq3RbAT43LsuxPpj5yFKktR1g2AMI1ASRAJfueMJXHvLozjcNmjVAhAsmC26vRjaGKw7Zj5edc4qXLRhOZbPnwOwTqFbUcbtsgWLgVB02QuoAjmAEAGstdj67CRueWAHbt28F/smYjRDBaUAqxPMzHYx1FB466Xr8esXn4BmXUFrk+Ef6ftNNKNeq+P7m5/BVdf/EIEMIJSsVvdl8lwhrBANMoAqoST9kxApTPzht5xtLjtzlez0eh9u1uv/DRXZHerv83MQx7OPh+HQqm/es92+/wsPiWZdgV0mbz9rusrt8so5t7wTJRSHXpLgw289D5edthxR3EWgRIaHE0gIWEuwNuUUPrF7An950xbcvXUfYm1hLeOko+bi1y4+AS/duBzDjRCARWJ0mnWLfn5BGnf9kpALuLVk5xboRPb5jE2NSKk0Yj47Nosb73wS37x3B8ZmehBgnLVmCd79qo04dfUCGBOnTJ5MPaZAQWGhE4uw1sA/3PEEPnrjJgw1a9m/+4df5U4eibxailv4ZFghgHaU4JRVC+xf/5eXCjLRDqEa64gocXkDVO329Xrt1wRB7StaJ/Ltn75LPPTUYQzVZcnjz9EuGhwAiKqECz/WgtIHOdOL8I5Xnoh3XXYy4kRDSgtBDLZUmfcXSEwqz2KtxXce3Il7Hj+ItUfNx6vOOhYjrRDG6syrlNmIcKJQlW1Uzgqwx/YhyvBL63AMnS9Lk0ABJVMZmK3PjuP7W/Zi8WgTv3zmsaiHEolOIAUG8NXLAzZWIgwUPvG1H+Pzt2/HUKsGo01ZU1k+wmQTHZmqKCod+Gz4tRtpfOLt59oLTl5uJmd6V84dbn3d7RZSBfmr9aLe7fVa/dwfPrbb/M61P5KhIg+J8/M71wSs83DJh8ycvrlSErPdBBeeshwf/63zYS1DZTUaw3p0cc6SREAUJA2ZPfycYqWNThM9quAlHv0G6MPCmNPybsCDtlw2YdjTj3ExD0BJ5VQFBjbLa0p0kH0GlAMgaZt+53uvvxN3bB3DUE3BaO21zKv8yLzJlLOPS9p7pX+QvUspJWa6MV568jLziXdeIOO496MwrF8MIMo9gHCSPwY6G2qBOBes8a0Hd8k40RBEP4U0ST5btjIlQfBvAYHR6UY4amELf/T60yFEmmSRIE+tg51kJv3QBlKkta4xGsYaGKPBbCGzQyRvgqespRkViiBVWTzs4BN5v6r8VxffJ0cAQgqCsRpax9AmTlvORV5hy6lmb6JNpAdIIlMkE7jqdadiQU0jihOf8ziQWlZS3MipitKQ6bZk0u8x1qIeKjyw/aB8/JmDCEN1bpJ0NmShXrhAEAFAr4dXkwh5z/iMvn/bITTCAGy5qIn7u3cuakb99Gm3u2MttE7ArHHV60/HsnktJNpASS4aR2nrJEf/qMyLnbJIiLyTxp7NFRB00agpQZ0iGnEJBjGltbgPC/tENg/soRLtzH+LbMpX5G0lLucVcqOqmGXxGlIKxInBikWj+IP/tBGdyUOATSuKXMKu7CuwN5ru/V/ZqS4TclFCzEoQJtsxbrpvlwYUR4l6tfuBReb6LTPXLdMvAaC7Hj0gDk10ESrqjz0EH8seCPk6h5J9jSBgNkrw5ks34MKTlyOKewikTbP17ANaJysvHniFQgZ227k+tl9UJy5nn8oGDHGlF0Fu74/Lr+UKr7/CXyz/Ks+HGKiYjwftVt4bMi8RKEKiNV557om4cP1SHDpwCCoQDuIInxNQ7a24p195TjmqaBkIwwA/2LJXzHYTatTELzHvrGdnThlMTZwk06coKU7SWvPdj+33ovwRehmpVXLZb3N6a0WfHZTG8Z5mrDtmAX7z0hMRJzq7yTajRPdnvKmrxQAaNXs3EdUBkyrW5MLP5IpMkNMRHIBbu4GLXRZOpdBlJ8dwRafccOOhfKn3YlgQGVibVmSvvmA9dLeDXrsDocIiq3PpZgy3jVx2HPuIeB6ySGiECvsmu3Tf47tZSjppenreKVkOIERZAqrLw7Cmnjk4aR7dNU5hKIseOVseQK+vfliuECCpMAYpJRILnHfiUoy2arBsIUgUzR7fuJz6lx1s3pnjIufQ856Ap8pR9IitN23j8VUFSqKGAwtbtrAFhkWF8EORZFVadvlMgeDy9pWTUJVuaR6DcoN0IN2RoTpqtRDd6SlE7WkIpZzbZuEOz1mUWErZoKKB+FD+lrUh+sGWfQaQKgzV5XmLWBCRISJOtLgMAB544pAYm+5lgEwJngyiQrsTP2nTip3Sy3nw2ZtqhSqtjwVlRA3h4+Ds+sqS/cJexy1n5fg5kkBJGS/AnEor1uUsUS70RK6sDAOcxXNRxvyCK8AMwexpBXBOS69w9Sy7swZOo8c6PERri5Jzx54JdKIEpAS6U+PoTh0GSJRSd7kB94U/dnwVnBIaRXXGzAiVwI93jItOYqFUeBkRMREZAQDd7sRKKeVSC/BDTx4iN7RQZbCBKoMe7MZOwOEBlniAZQslBB56ajz7RgnL5PfDeUBt6/h29jCnQW5WOIfZL+/m56QpwGQrRFVkSRQqDHbOZEa56EDCM1KwCyo5xBNwPymEyu6DtkAYKEzOdvB337kfggzYaFgwOpOH0Jk8lHUi01KY8rZ0/lmESH9XR82YvQ6NtWm+sWe8TZueGmOl1NJ9ExMriypAqXB9GASLxyba/NiuCQpDmdobsYPgZVGey3ZokZwwZ0SJ9K1ZJw4zW7BJy5GHnxrDl+/agUBlDZXi+91WbyWxy/MIt3XrAjTZFbRc9ujdMjD12BbaWpisjhZSQaoAUgQQQkGm9CZom0K2VHT6fIPjvKnkvO9iyJWr7pcqdHGX3pZeAEEBEgO89y9vxo+3PYtGSLBJDBiddkhnJtCdnoBUAUjIcnAkD5/Fa1If/dw6bK2c0RTFhu55bDcDWDwchusBQDEzxfHMxQB4x/4J3jvRSyFZ6w9olEJM8HD1Pi2fvN1K5XBj1hNCoCQ+9k+bQAB+5YLViLMWsMsELhIfQkE1F5SWbW4/v6y53RqofAdCpKHHaIsgkJBCFrXx1GwX7V4EYxmBlBhqhmjVawiy2GGNhoXNRKXd0ORT3KlSHVFl4GXQ2CORgGFkHhD4wHW34Jt3bMHcoTqsMcUhMwuQlOjNTIJIoDl3YcozSMXRvQZW39xBlrfZQv0sfT6BJDz6zAQD4HpdXczM31JExFHUXg2Atuw8jG5sUAsDWMNOIdI/uelz+WngB4dLwkBWMZDBR778AHpRjLdccgISbSClPwWRP2RPXMmbnSO/iZOXjVwqiGqTGpwUCuPTHTyw9Vn88NFnsGP3OA6MT6PdjaBtWo+PtBpYsWgUG9csxYs3HIONq5dAiRDapAM2UrilXykMUUDFlis332E6UYmkEgDNFsyEQCn8yV/fin+4dRPmDTdT1ZQqvM4WQkj0ZifAYLRGFwJCAsYUj51d9SpQ0Vcg6icpB6HC0wem0U6YWkG4mohYtdvt5YA4HmBs2zudkXAY/QPY7BkDObIOKWjDRxziLNqv2YBGSBYfu/EhRNrg7a9cj8TYjDZlncvmQJ3ODy36+hkXv2qiOWkjUAr7x6fwpe8/hq/dvQ279h5GomNIMKTIIdvUgPaPzWDrrjHc+uBT+NzXH8BZ65bh1y/diIvPOB5EhCSJobKkuKJRVQJLHkOVCoo3ObHKZnVooBQ++sUf4G+//RDmDjdT1rEkT5GUC+2kNEnsTY8DbNEcXVTE+oKGRwNIAw6EnXvxQElMtWN6dOcBnL1myfHPjI0tV0o15xMla7pRgmcOTlOghIeOUYUBUBXvyrV4ySWDFEObTgnHGaEyw+AbdYFPfn0TejHj9151ErRNJdnJVeXmqu8hZ7zLqVLyw7cWUkoYJvzddx7CtV+7D7sOtdGoB2jVAxBLsM1qb3amdQRBZDHWMHDHj3fhzoeewsvOPA5XvelCrD1qAeIkgZTk3XJfkLJSiOeHT1Q8RcsESYT/ccP38Jmv3YeRViM7QOEZMTmcxHQsLX2O3alDsFqjOXeRn6TmYddWEmeHO5jDxbEx9MjTh3D2miVrQjFnvjKIN4ZC2rHJthif7kFJ4VgY+vX52KUlV8SOKtef2Ofc5cMYebNlqK7wuW9tRqsm8JsvPxHamPSmsVN+DRq2YFQk31NGrJIBxqe7eN+1N+Mb//wTNBt1jDZDWNi0m5kleX08MkbGH0xdfjMkgAN8+95teHDbfvzp2y7B5eetRaJ11s72J5y5D7+vXhZCkjBqocJXf7AZn/jyXRgdbqawbx5GihyHKz0BTnOhrDPamz0MthrNuYtLvkLxfeSdlwciFSUs4Se7DjNg7dyW2SjI6pdLKeWzY7N2oh2TzM/TARmoMnsHj4XbTw4bOJRfXBGRMn4EQUiJek3hqz/cgdluhEBRAQ0XWXbBjkkrDSK/nUtEMIagZIBDE2381v/4J3ztzq2YO9xETRISncBqk8VN9ocDhdMytrYwPJu1Y+cOtzDTjfGeT34bX75tEwKlsvfnCJCzNxTuY3IOmzXHBZ4+MAUhJCRRmtBZi2wdRfrbqcEZNtM85AJsISJEs5NoH97nTxQfSX3D+TtrLSSB9h6asYCQSvDLBTNPAsDBiQ7iWGflnhtbbVHPc+bG3WwA7GJV3pMpny67I1kOTo5UVn35ggbqocyyYPZgUw+Ad2Dd/JKkOYHAbDfG733iW7h/2wEsnjeSJmvV2X2nbPIGEx0KlvvX1jJqgYQKBN5//W34xl2PIQgCaGM9erfbyawmXzlQIDOCyoWnrsRIq55VAaL4fJx5J87YQ/7wqU/9IikRdabROby/1BXoA0Yq8wTZ51dC4NBMjNlYQyg1KaTE6QBj/+G2MNZF/biYbnUz8rI9St4H9MrDymYOrky/FFCyEDCGceqqhQhUgNj4LNsq3u51FzOoV2sLKQX+5xfvxB2bn8W8oUZKriCf9uUT6r22YV/sLnWJLYzRRUz+wP++DY/u2I8wUEhsCTsXmEPeBbQoQCNknb18kuqklUuw9tiFiEx6kMj6+8Q2+80e2XXQNBWYIIRC3JkuPIEHq3tJOHmdMikFZnuxOHB4BoA8XYRh7RxAY2w6oryNSE7HrUhhuIJvu7U79yNQ7u0qiJfukEPmNeo1iY2rFjgxi0p0scgbhK8XkFmENul07G33b8Pnv/0AhhsSOolSomb+BIXwaaxcnVVy/ZHjzLm8iUZrBFLg8FQHH77hTnTjFBkkqnoAUQyQiMwSihlGYsRJgloY4PS1y5AYU1Qh+ev4Q0vkhVev6Zcbl1SIO7NoTxzI4GsBHw7Nw4tvQtpYOjzZBiDPEUkcMcCYmO2hpH5Tn0CDD2U6tU/W8i26Yc6V8GcHS0NhY8DWIokjzG0FWLlkOK15c4PLrDmFPX3ZlDxRMjaFlGc7PXzqy3dCaw1YnWX4vqYAlX1hFCosDnrnDmMX+D+7gySpoPXwUB13bd6JW+7ZhjBQ0Cbj9Dvm08eOLxxKic5tOG4JhNWwVjtCERnZAQIgWSKeDguXnbNJf6gAKYW4O43OxAGvdM5Z0+QYGJBWIYlhTHZiAJYFkSCwxWwnLm6gE5oArwnjNgG4MmIkypaEu43LFXyi0rXCaPR6MZYvmIP5Iw0Yy2mHEDLLzoR/WyuUA7bpEOgt927HfVv3YE4jyBYCstPYsV7nkhw1jqJCEZWh0ezfyjar9aafpAS+cNtD6EUJAOEOwpW/baZ1lAtgZdYgs+eyctl8tEIBk8QZ5O4ADCKHuqk0eMezeLOERVUmEbUn0R7fC7ApL1rfICtn5TJjYjYCIEgQpc8tSqxDcnBTpwHTum7y48Gdbt3PeTshq9lFMWOHjLWqjcW8OQ2EGdtWCJF21hh9+n7kygWyBAkFaw2+fueWDGBy6npCP3O2IiJdotUlt4Ac0alBXURjDZqhwpbt+/DA47vTnoYripSDM2RLAkmRPwkIIhhjsGLBMEZaNSQGUDKAlCr1dCzgi0eRn7AKUegR+BK1KbYStacwO7YHsLoE3ioSA7k3mO0l+Yi8RGIZ3Tircfv28QxIRLxT9xyg/6arxiIEpBSQMkBsCYllnHbcIudQbGl6PABYyUq3dOJHYs/BKWzZvgeNMJ1WHsxTh0ck6SP9o6L/500vVaZ2sh58pxvhzk1PldSX3IiyqslJnb1nQhKwbDB3eAi//JIN6CUas70YPc2wQkFKmTa9LDs81FyPgBzJGX8nTmHAQiDqTGNmfC+YdZqDZISTouWeHV/qwQBFmWxKYoyzE8+N76gsQnL+nuAxVvvKlmLyFQCnG7QinR7e/OE63nDhGrzuvFXQWmcqHlwZ16ayRMsxAKQbPQNF2LprDBPTPTQaoctD8kJOIR8LNymlgrIi0K8hWZUEIyYv9woChW3PHoK1afPGsgVljBCRfW0umUTuahpwJmDOeO8bL8KZJxyNH23ZgQe27cPOveOYmu1AgFEPFJRUGY8iGzYnR44GJQpKDj0NAISUSLqzmD1k0Jq/BEKqzBMIr5pLMpq/ygECw1zGGQuvZKrOz3l9+aLfLUoIOPtWKQnGpkzgQAJL5s/BhlULcc66ZThjzSKsmN9K6dQ2ezDW7TCWbWbyBBSpiO279k9mDR2V4inkfp1wPAs5swrZQWSt4XyYlSrKG6h02go2kCCoIMD+w23MdHoYbjVgTPpqXJF565O3QamOpiTh5WevxcvPXovZboStTx/EfY/sxN2bn8LmbXvQ6fbQbDZSeJyo8racqWIuMQ7KhKohJeKoDRzehznzlwNKpW18KYoOZ85aUsUOGyKHM+e3dtltP1I/MshenUIgWAiRDnQM1QP88tmrcP6Jy7Du6HlYMloHUcrFyocoirjm0J1LVe+Sz5dzD/IHsf/wDFjIrJ5mlFtDqgbDYKevUQJWDtE0f31n+pgHjFxxNt3U6cWIdYrM2Sx19fgBlPIOq9OU7lylybp6zZrCmSeswJknHIXfevWL8PjOg/j4F27H3T/Zg2az7gFD7E4jMypZmtORVCGSKMLsxAHMWbgi9QQEkMyrq4w1nO9VUIIc0MfVoaIBKsc8YFadC6qVIEasNRbNbeDDbzkPp61elH2hRqKjAu0TJOFv+ShvfqEyVmWiOr+MtRBSZFmyBRez6cJlrnqVTJ84tHU5DeQ1wgRhwKBGSnnRWle2nvgtY28fIaNcYOElzeWIuTZJNnovcOq65fjke1+HN/zJP2Dn/imEgXC0DLkykZ1hKuQOkWSXQIXQSYLZiTGMLFwGIVVGmRNQSmR+kgGlBNIuYDnkyc6SFFd+vU/kg9kDjUCAJYIxFu+6bD1OW70IvVhDGwPLgJQi67xJT+sGLoOokIytiIlYKmIiANSUAkEWdDAvLx7Yp0CRRxTlIvmQLbNnh6U6l6subhmSitnTPpU0FxUtklNBPj6SCVzmhyhIQEmBUAn04gTzR1v4TxesQy+O0vdV4Bs+I9odoiFPbkamdDGpkEQdTI/vz/iHaYldD1UeKNPRrEYYZF0n9rpcZdOFvbVpbsLnSqkKIaANsGzBCF504gokxqQbvQVKTpvLCPbWp7BTXrpoCjtId4nsLVkwpxwCrdbjliuAJJfEVZfVDJ/wSsQVBlAlm0cKCjXqNdTywZlKogxPgMohqlT6D/1UbgGRrbdnZhyzdB6ILKzR5Xk4z2KQdG2hWeQoqJAgxL1ZTI3tSw1SSjTqQRYCsgyxUVee9RO7/ssf86aCJOnw9gqOdJoVN0KJRijLFicX0/mVpIa8rWFwa/F8s4fTApbOZz12yVyEgcrWzjnNp5KOW1DbSlRFFNqCVJWw4irJyZdxzyeBtLVYvmgEQ806LJsyGR6oGHqkX2WoIicLLTgTRJjpxJkcD1WWbThDrRUV8pwSzVkpkhuvIAEdzWLq4G5gaC5GWvWsarHMIIGRZpCtcPMJ9Oxh5rkHFj4FylGztFmpM91NMNGOMp0f8gZKbdbG42y9O6PSVyjiY663JQrRiFwIGmAcv2I+5g/XYKxFMdFHpZsnpxT0hIKczaTFnkJniI8q4Ds5OuHIOpgbVy+BFCIbEbOZJqAfUaybvHGVZJrT2cqBFZtNDIksB9u5d6zg/1d0bjycId90XkwIFCghOVrIKbEk6bXRG9uL0UZKpBdBLSSAsGi47smSVDVqXU07d1aQyY9JsCnvf2K2i92HZiGFKIc2Ki3UQbs6bKWnzsSVph1BynRaePmiEZx0zEL0erEjr5o2QNJhFlvIunk5ALljW662Hzkt2dzl2uwgU5hZa4OheogLNq72ZF/Z5476z44rErPV7iP78wSp4JPFU3vGj7BJqSw5KWM0lfAxDShDM+l7k+YRnPQQpiIhJKI4vhcIsGC0wYL8+XJvts7xy1TVs3HjEQFSSUSJxTMHZwYLHDgop6CK4Iwgn1LgKmva1KpF1pwhIrz8rDVgo8HGwBqDjHKb8fspk/Bhp/3rYOpOJ48dchU86basP2nTVm2718Mpxy/FhuOWOgogosDe+zJ0ygUbhDdllf9d0X8pQCsCoDA508aTzxxMGVI2HZwFVfoETlvbnUVwO67lMu30QiRJglooecnCEQD2XmENHgKARaMtK2V6W4vauG8w0HHW7vpTUQGDM+vYtmcyZdUSVfQibKb1Q04ZyM6QhdtmLWtWZ0lYug9AG1x6zhqsWTGKbrebtWbYV+AcgE4zVTB2x0mIKhvJlswfm03vvunlpyEMlEOKLbGUYt6Q3QSzIhLtUhqcyaic6SSlxDP7J7FvfAaBFFmY9EOaNx9BfvPO7W3608RAYgxGWjW7ZN4IgOQhQUSjALB4bgONMEXUhOs63O4akeOOqy1axyCyGYAn9k4iSpJsDMxVwizffMqE6ec0WUdzz1MWz4ggQqRued5wE297zdlItClCQOGtvNk5xxJcjL/CbfGXfGRux1ooAqZnOzh/wzF42ZnHI0oSCEm+YmcuGevkA8T9bK3iQKjC1wAhhxYe2XEAU+0oxWecblxBPqn2OSpkUO/sHLBLG8aS+SMIlYJO9KgQQn3XGGOWzx8S84ZC1sYWK1h8GNZpepCvCcR9TRcgVApPH5jC7kMzEILSRM3LAURfb8n1HlSBZT1DzNyZFBa9KMZrLzoNl79kAyZmexBCetO8ZTgTjgKUw1S2Vbn2/uaXEAK9xGBkThPve/PFqAUyrQgoQ+OqnUZnZoGdJkJ+GMLpUfi/yyHVx3YcLNBRRoUMC98IuOiC9GmxOR2vHHCyvHLFAgHAJBrfFQix2VgjRodqtGhuE7Gxzn0ZvPW6ZFdRn2xK3lsQbDE128PjuyeK2FcFFF0RZddaXTfnARxVwWhiSGEhYXDN216OjWuOwkw7QRAGIKnSIQoSKT3dJbm6AywO8ygHScqqRkAKBW0ZibH40Dsvw8bjlmUTTa44g0ubc+VmRUXRr5SWL4WjSrELZiBUErE22LprLMUZ8vF09qd9S8PIaCzcvwmdgX40TBBOXLmEAIjxHm8WuqPHweYJKSSOWzKHrTH9P8QZAi1EkKk6eEkVAImhNWPzzsMuQu1N4uZ9cp/uVcV1qtP71gs5SgDGaiyZ28S1730tNhy3CFOdBCoMoaQq+P59QBFcDp4fB5gEIATCIERkLCwIH333L+N1F56MOImhpM8zKJHTCumYXLfNGAxol+Rbk0297BmbxjOHZlCr1QESKVGIXH2AI+EKechMATPBPt5iQGiFik9auQQAnmAbjYtWq7WHwNsBwnHLR9llmPKRtyE7ihpVDfwSVRGCsG33JBJtoZQ/CVxSqqvECfJLsMzdu/AwV25UoCSSRGPV8vn42//2BlxyxnGYaUcwIEilsk5lNmSR1+ZeOOGi20eCIJWEkApT7R7mDjfxmav+E37t0lMRJ1GGaFa9WKWSqVQWuaFbT45GwJedtUgSDQLw8BN7cGiqgyBUBWpaiFVTlTDN/kie06xzS2Ah0tJ53twmn3z8cgB2+9ELFuwRzEwk+CkAfOKK+ZhTVxnfjvtuoxdlmHwlLLeuzTrKjVqA7Xun8PTBaUihECXlfjxrU60/Y7PKzaYJirXWCzy+NoCrG5SXP1lXSwkkxmDxvDm47g9fgz/+9QswVJOYmuki0SaL2SlZM59fzkOBEKmuoJIKIIl2N0GnF+GSs47Dl675Vbzy7DXZeJhIh3IrBk/5PCNzRVcmLeuMZQghIAuPlE4HG5OvsGHE2qJRV5jpxvj8tx9OKxq2A3N69FHtBhBfyAHQs/CWGIO1Ry9CQwm2OnqKmUkREfeS9u0K+P2jFg3R0QsaeGLfLBqhKutnSgEZKtqyzgH1bc8us+1AEmajBH9z61Z85C3noB4GzgRB3rp15Ypl0RmT1L+1uxw2JW8SODc8JVKFUSLg7a86ExeduhJfuOVh3Hr/E9h9aAJWa0gCAiUykYr0+60laCZYCAy1Gjh/4zF44yUb8Yqz12SzgeVYWP8EUKXi9Mk6qQyeUphu9zDdidCoKdTDAPVAQgWB9wl37Z/Ahz5/Ox5+/BkMNWswWpe5hbMx1Us2M0swlSQwnQQqPyNldLRTjltOAGg2Tm4fCZqs0i5t/GjMwYHRocaijSvn86PPTFEjW7NmvdFm6hNuogEkivwfLBOG6iG+t+lZJNbiDRccj8WjTcSa0Y17GJ/p4cDhHiZme5iYiWCY8EtnHI1TVs1DrDWUYG+6ptAjonLbZrEJPKNyC5GqjiSJxvFHLcCfvu1S/NblZ+GeR3figceexlN7xrF/fBadKFXzDKXC6HADxyxZgFPWLMf5pxyLDauXQAmR9esZUpUIMlXobq4XhCuskYlKK6Vw091b8fGv/BAz3RhzGiGGWw2MDNUxOlTHnEaIZk1ifHIGd/54B/aNT2NOo556QqJShhcDdiUxjqApXM50cC6AaS3qSvB5G1cRgAOdafuod37dXufH9VrjlNsefNK+52/uE81amHa6UJm791a2+SggO1o7cKXahEC7lyCUwEgrRKwtut0EsTZp3UsEEhLGMBYPK1z3exfiuGXzoE2UJVylaqj/hnjgGBRlTRVrUzwhUKpovPRijbGpDtq9GNamesQjQ3UsHGkWP0ZrXcqtWc7pPkXoIWeNfX9axxnlCqgFNTy1ewyvet8/YLIboVELoHXaFjc2FZvIx8MIFo1QZETTDIwS5FHXy+3qKGluVOE4eHsIuShjozjBikVz7K2fepdQhE1BoE7NBSIygejOzQBO2bh6gV0+tyEOTiUoJoUdUgU7SYjNEwwmb07azQmYGWwYrTCd+5uc7hRIXiMUEFJCCFm80YmZWfyvrz2MT77zwixWIpN8t/1aBO5ol0tkpbx+T+t0YzTytCaQhBULWgANOUmYRWKSFEIWSAEet9i2DkYhqsTZ9EGwo6bCbCGJESc9/Mlf3YrJmQ5Gh5sw1qZEDHI3jMiiItHWFt2/cn8SeUot/rYx9/ZxAaHbosNYQtm9OMYZJ6yw9UCKXqdzcyYSlQLURMSK9U1RHOlFc4flqasXcC8xWflhvbEzd8cPef1vn8NflbGz2ekESiFQKqVCk4S1aZJkjEEcx2jUA9z92D58/vZtCFQAY7MZAc/32MIpFmWcY4Clnn9uCAQlBZTK3aHJFEcTWJuA2UBRymEUgyZeiQeihentFMjXholc21gLKNXAX371Xnzv/m2YUyMkUQ9sknQ83WhYY2G1hdEJjNbQ2hTcgoIeYSvEtEw5rRhwpop2QzUfK4ZdLaQAX3LmGgkYHevuTa5UrGVmQjC8yRj7GCDoJScvYyngQLTwu1YY3PFyRSQY/WJFJQTsxjQugZFMNatRD3H9LVtxz+P7UQtkwb1LNQVtmelyPrrKXl+80DDqK7zLkCSyzd2+zJojxkiuKJYofnra/2d4JCnOFE5JQRuBeq2G2+5/HJ/4yg8xpxFk00qZCmjG7MmHQP0pJnK2h1Vm/LxuIjlxfgAfxJ11IkKUaBy1cJTP3XAcGWMfO3x4ZlMuECpywUAi6inibwPgF52w2B6zaA56ifVoRkXy5Q6DgssOF/x/L2KlF5cqCl8E5xan/0/JdJHCR/7xQezYP4WakrCGvT54CSr1TyAVeIEtmz9cacu640Bc6BxyqRjO5Zg7OXNiVB3WIAdoyXKKLdv34o8++x3AGCghKjfVaXrR4IqCXOVrl5dAzuZ0wNNV9hRJnTV4UqR5z4tPW2lHWjVuR8m3V65c2cvOnD257LCOb1gb0chQS7104wrEiSmnevoB6L4ELI9UwlEKI4hszq5yQ71xTC6VRkTaj6uHCrvH2/jgF+7BxGwEJoJhB051RqaZ3cWTVNEbyiaa3cXBXDEGHrD30uUo2AxDyjuJzq3Mf4SxNpXD7fbwh3/5Hewdb6NZC1NZGDgrdZ2eQN9iLRfv9aaos55/nhWwQ3p0BnfdFnY2yw9j0s1nr3nxSQowpJB8wz3BPAdIwwCaWxJtfgQIvPKMo8xoS6UbvAqItIIOVoKOqxxULmFgZ9LVVcgs287cr+QHaw0aNYXHdo7jqb0TUFL6G8bdoQiv7cFOF85X43RHxXPXzwMWT/V13F0Q0/KAwaNU81gIwo6949i+ZxIjrRaYFEiqTOKNSmk3Dw61A3YZolJquhgT9Q9fUR9iksL2ktCJE2xYs8ycvX41tI5+1GyObMkWRljAXxsniKgHxp9ba5ITVozSOesWoxsbCEmgyr319vtVSHVUnbDiissYAMX6XbH0unXjBEcvHsbKpSPQ2vR9YM6mdqiilFoA8STKSyXKfj1XbJdc/l6GmrE7BFN92MyeiGbuXKxlrFw6H8csm4vIIpV7FSJr1QqHP+kLahXsqOpI/YA/c7V3we44uD/PkYfkX3nZRhJEyeSs+XMi6rnnLnyGPFCrNb+tde9ZCCVe+6JVtq4AW6GCH1GPhCvDlqj2MT0x9r4WcD5PzxlmHycaF25YjvnDzbQcF1lBbm2pWCq4mOh1tYPd9ph3mIWLdOhiRH1bQ124eXBocEribDuZZcZwq46Xnr4KSZL4fAQeOLHYr6dQaAOwl2e43Qa3m1hQ4Sri1EIQenGMtUcvtJeft15Y031211Nzvu2etWcA2RIBCUALIf8RAM5Zt4jPXDMfnUin1CdH/nTQA+MBbd7iOWYxyWXQuuvmhQd5prOKow2FS049Oq2WRT/cTFVdIieL9lYB5PsJiyZTRf/AaUF7Q6Tuevc+QcxyZhBFbE/f/ivOXIWRRrpmhx2hCPYWWFc0FvpcGPm8FGav4eRuRK3C0zn/NYkjXHnRidyshehE/I+nnw6drYvhQR4gS5iJ49h+No67h1RQE1dcsNbmqpuDZUuqZUj/Qmga1CvweRlZpk4FSBTFBhtXL8Kao+YiSrS3fYMdKpRgn8XDfWBUP+uEnQYW2/6Vrq7WPw2YcvZyGpemSYDWButXL8W6oxeg2+1mSyAsSpNkn50kMtEKsMcecsOo5Sqh1aWAUdFydn9sJ4qxctlc+/qLThFGx4cOdzqfJaI+XyYqh2eZWbZarb1K8LUA6LwTl/OZxy9EO0qK4RY/V/EfEDsaQuxmqJXsHHllQFQeaKqABEgBS8CFG1cgkDIr9Wy5IcP6o+jsDCeQu8qdMYCJmw13ccnDryaKXGE5kcckKuHgUiIGGV3dwrJBPQxw3oajEUddkNUZodS5vRX1DB440U7ObbbOyEOJ+LkJKlV0gaIoxpteeSbPHx2mJI6vPWbhwr3Z7bdHNID019XMzCQUro3j6FAtUOLNF622KSzuSRkWnAFCNaPmSi1A6Qg1+bQpdhZAFomaJGjLWDRSwznrFgOwKfvGcerVNy3y0bBqRk85SYLT1qstRETATBk9gGHYwljbx6gZ+GdviRSV2kfWAmwgSAOwOPvEY1AP0yrKfcP++Dx8AAMYIFjlH3YeZoRwaO2uHC0BnV6CU9Yst7966RkiSZJDs53etWmVd3Vf3Bb9LvwaixtvFEStvUqYawHQuScu5wvWL8NsVxejWKKCtvX3CKmPD8/V2CnI3T5ZECqNBRaMtjB/qF4+VGuPeJvd3Jdd1+j8Vioof8t0/j797xCBrCFQNUgZFK3TkrPXL47B5GwtcTaj5BoGDGB0uIlavQ5bqHyLflTV3Y9QIXjklDeXBeQq3FV3ELjziwzg3Ve+mOc0G2RMdO3ChQv33njjjX17g4GBu4MBXHEFpxbT/mySRO8Ogtrcd75inX1w2wGhLSApl0Rz4zwNnoIhdwyqSo329+nl7WYpgOmuxmyk0aiHKVNZVPBO9hm2nkhzdoAmcxpSEr7/8HZsfWYMc1s1DNUUlEjBKm0sJtsxptoxzj3pKJx54tGpgLUYkORWEi7yxH2pmBpSEDg0MYtubNOZS2uONODswecew9RdbTtAmJvchRFZR1AKicl2D5e9+CR76VkniF7UO1yv02cz2Hcgv0sdIZGz6Sq5of066v6BMfpvTzp2Pv/aBatx7S1bMdKqFYpXuXL2ICmZErrs/+Su8jd7NmERCMKeQzO4fcte/NoFx6OnLWohQVCeD7A3UJrKz1pQsXVMZOidRaAU/vyL/4z/deOPwNZCmBjZ9EPW3ZOwQsFCYm4zxHV/+Bq8+JTVSLTOVtJZuHOdLtRarngXgAC0tgUD+gu3PJyNj7O3TJOqwwHVMrowZtEv1cPok4nnzGiEAGKdYOHcFq56w/lQxBSx+QOiof3VfcH/Qg7gGjwLGdb/zpjkfkCKt1xyvDn52BH0Il00ZmDZQwE9giiXijlcWYdKg7CEzKItM2oSuO5bm/GDLbvRrNcgSMHYkrnLzkKJ6pwcAYh1evi3PbANn/ra/Wg1G5jXqmG4VcdQo4ahZh2tRh1zmg2MtppYODqE2BCu+Zs7sP9wNtKW5S1chVvJUQ4nAcMErVPegWHgg391K2697wm0agLWaG/nUgmIWxRTJ0dqrlV4/qjwi/0NJYROlODdrzvHrDt6sehGvftb9dbfcSmagOdkAMVuWSIbhniP1lFneGgO/c6rNnI6lDGIs+8fpJsSFjNs1RK4Cis50zHtboz3/e2P8PGvb8bEbMrJs5ZzAe2iEcUeZZoRa4N6qLBr32F84PrvQUkJAYvEmpR/SAJMEpypgxtrEccJ6qHCtmfH8N//9gewGZ3LGuvJ5LEDXVtLSLSFFCkx9YePPo03f+jLuOHmB9Gqq37UrkKxZ/jYRV8Syr5ABnuj8qXJS0mY7nRx4akr+S2vPIOSJOpAivfkt96t+5+LB3BCQfOHwppPARDnn7Tc/OpLjsdMN4ISTi3upoEeV4EctQ/qzwEqZRc7yxfDIIAQAjd873G8/TN34ZaHdqWzh1JAmwx/zz6bzaWVbVqudrox3ve5W7B7bBY1lWrh5a3gbFtemZgxA9ZA6xhzGhJfu2MLvnDLjxEGIRJjs9ZWGdZSeRsDKQUCJbHtmYN4z6duwm985J9wz5ZdGGrUsvidMXpFqT/oAkvlptSqzm8lN2LbR5IthCWEQJRoLFkwjGt++xWmFtaE4eRTzbD5w5/m+gex8I8UB3IOszC685BUzZNnO5H5nU/fJh/eOYFWo16sle9vqpSrZvypGfRLtbhTQeTbqJTpZI7VGmeuXYy3vGwdzj1hcUa+SLISMo352jAatRr+8DM34/PffgDzR1sFUdRVM3ORwKq2hzEW9VDihj95A05buwLdqIdA5og2I1ABAIVnDkzghu88jK/cvhmHZ2LMaYYQlJJb/M/HR1wkXY3xXKk2+7bFOzc3/0y9OMEn/+C15lXnrZdR1HmkVmueno9J/7Tb/zMZQPZG0zgSzazTsna7UuHSJ545aH/7Uz8Q7YgzsMbtwfYzeJkq8+10hNmGqvSFV0YSZjsRAiXxso0r8OsvPQ4bVi/u+xjX33QvPnDtdzHcCMqJH1fOhXwhKa5QeqUQ6EQR1h61ENf/1ytx9OJR7+fvOjCJL92+BV+57SHsHZtBq9lIhzitcz+rXVNvlM7xhugvNatCl4NAVEK6e3hipo13ve48+/63vlxEcbwPHF1cq815PH1kP/32/8wGkD0kSURG69m3AbXrpFTmOw8+pf7r396HWqB8DBb9smvkzQ2UtYFwymG3jiVHL8Bd5UqZnFwvjlEXBucePxeXn3cijj9mIWY6PXz9rkfxV9+4D2BKQ1RFw91X7egvW/MXkoLQjROsXr4Qb7nsDJx47EK0uz3cteVpfP2urdizfwKNukItDHOIon+Gv9BbtINLygHeD8WeYOq7Je4CKCUFpmY7eMW56/Dp97xWB0pKa7rvqNWGr3fXwz9vBpC9aUVEOknaH1Oq+QeA1Z+96RH12W9txnCrDmPYKdOdGtZZflhq7pBTCg5kl/SBZG4bVsp0HdzhiSkkM5OYN6eOjtaYnO2hFUoIzhU6sv165G8Xylew+3P9bhMhXb8eG0ZiGM1agFgniKII9SBALVCwXC6ugLPfiJ3VN15eQ/2Dlswls5cGyOSQI29HzuHPdHpYv3oZPv8nv6oXzZ2jenHn441a66r8jH7WMxV4Tr+utswslEo+Yk3nHkCot79yrX3V2cdgaqZbLEVAdZGSu1enEhvd7LdvuNIjy/gN/Hz12sKFC7BgyVJMdyLoxGKkUYNw0Ad3dDtXAc/dsHXU0EoeY3ndUtq4wFAjlVerKYWRoSEEQQDjavS5K3SAvm3rvsg6+RUQVXcMVgm4PsYqBaHdi7Bo/jA+/vuX20Vz56g46txTD5OPpKH6avtcTpTwHH9lbBLm6ekFpiHvkap53Eyna67633fKu7YewGirUe4cJrfer+IADqLnCevAX+1S4QsWsm2Oao+UErrbxszY/vTW980MsLOLoD9VRWWsrVxJJAZ2O8sfz0dQJi7BwcIAMeDlHIYTs+8iyPFI+fSvlIRelGCoEeC69/2KOXfDKhnHnSejyLxoeHh4LD+b53Ke4rkaQM4boOHhMQlcZUys5zQD+eHfONeetnohZjpRKnPmMrUdsaQ+ZqsrpWadLdwDW7ROn8HZ1m2thWoMoZUtV8w7eKUUjCip7N7KGnfKsrqZhbyJPG/2jnnARE5lwQO5lPW861lhbbmMZPJX87pJKWerXqIoQbOu8Jn3vtaeu2GV1DrSocBV2eHL53r4/yoP0J8UzlwJDv9eKqUOTrT5vX9zj/jxU+OY0wyL8ouZByRAlf4AqLIraHCZMHCFXf5AlUBvdgKz4wdKPULnMPsWWw746TSAdDG4xB0AY6M6lQOvMipEII40WNjfd0pzESHQSxI0azV8+qrX2ItOW0NJEmsh4jcpNecrzyXpe94MwE0KWc9cqTn4olKhGp/q2D++4X7xo20HMNwMUzp3wa3j0sUPQMR93WH0KYmViWU1b3TMQkr0ZqfQPrzfX6Y0YLCeKqBKmbq5Gsh+391aeA0wz6gF/F3I7Cupss2qGlRWzuWG5MnopH+rZFqSzhlq4FPveY298JTjRRJHWsjkjdnhP6ek73k1ANcIdDRzJYvwi0oFaqrdte//wgPiB1v2YbQZpvIw1ha6w0zsjXH4hNGScMrMFd4pOWPifunkqpgKpRDPTKA9vh82DwXs8gPgdfMYZdPKA62cxI0qw8HesKjnQRwjQvm6uQEw9W9ccdZlOgszGUpITHd7OHrJCD75X15tzzzhWJEkkRacvFHV/u2H/7wYgGcEeuZKIPx7KaVq9xL74S89JL9x79MYbtUyzN6f9C8KZRqQANGgSEBeuHA3tRbdtvzmColoZgKdif0O7GuL5rnvrv0AQ16JSn2TuPkK91zFfFCg8Ks9KrgCbrXQl0JSSWeXUuDwTAdnn3QUPva7rzLHrVgkdBJr4vhNz9fhP28G4HuCySsh61+UsqbiODaf/Ppm+fd3PIFaGKYj17ZapVgvnrvcfh4QUfsoaEQe0CKyoZF06FgimjmM2Yn9zqHhCM0xP+B7w6eoGAActi5X9sZXUEzmfs2AcsdC/2uJ7L+nO11c/uKT8ZF3vtLMHxmSWseabPzG5/Pwn1cD8ICi3sRrhWp9SMjgBCDW/3T3DvWJrz+C2a5Box6km7JzDf+K4IR7hziTbHf4ERUiBvlONydUULm1A5IQTR9GZ+KAkxM4NWfl4OlIi7AHYtZH4FkQHTm568v7yq9RUqAbJSBivPt15+P3rjhfB0GgjIm3MkcfCILhrz6fh/+8G4BbHTBPLzBa3SRV4xxAm807xumjX3lQbNk5jlajlioNuCvhB63tGfRGya/F+xC+inhDigQSoulxtCcOgoSsTDLzgGZt/6DGkRsYg0Whc4IK+uTnXd/mbyud7ERYvXwBrv6Ni+3LzlrLgJBad+9VauJyouVj/5Zs/9/NANLn9QNFdJHmqan5dij8IyHC9wIC0+22+exNm+Q/3vkUgADNmsrk40paNfqaYP6CGievKokZ7uFU0casbhdSojs1hvbkoVSPwCNU2vIbRIWo0AdGoVK+cp/1+vxU8gl9edjLmE2CUvGGnta4/MUn47+99WKzfOFcmW5Fjf9cdeKP0sjIeP5Mn++z+rkYQN5BzLtRzN13ai3er1S4AtDmtod2iU9/8xHavm8aQ406gkz8GU4sdEvFwWgblVk8ueKMuVI3+k6ShER36hA6k4eyFSr51XQMgFwIbzB/z+UEDi7hKxpGFVQSnIpGMRjTs10sXzyK37/iPH7TpadaiEAmOtotyHxYqda11Wf5H8YAHC6BJCLNPLXW6PBLUtVPAYCxqRnzN7dulV/70U60ewbNepCVSrZy/10PQMX4NvW1SKnCtuGy4ZPTpindWN6dOITO1KFUTLJs2flzjM7MHjsdTMKADp1TKnKR27hiGdaBpAWIGLO9GKFS+OXzTsB/+ZXzzMpliyQAaN3bpEz8BqqPbGNmBcD8axC+F4QB9OUFO3fWcfSiqxOjfjcIwiZg7JYdB+mvb3uc7tqyDxaERk1lEnS22jWHtx6BjpAv0KBsy5Eyp3T3wOzEfnSnxiGk8j18ZSuHjwhSfyJY1O1Ou5nhMXhculonShAbxjknHYPfed05/NIzVjMQiCSJOpLMp8Xug1fTypW9n0e8/4UZQNWNxfH0S4SofUhKeT4gYU1kbt+8V/z9D56gTTvGARZohApCANaU07cD9/+Qrz7qJ2bVej8XdxaAYLQPp0ZAmUaR6+bLQVMX0ctVy8lr8pAnKUS+WmimtNLuxoi1xgnHLsKbf+lsvuLC9bbVqEtAwxh7t7XRB8Jw+J9/3i7/F2YATkgQaZXwQQG87y1a058pVVsEAO1ez9z2493iqz/aQY/sHEesGY1QIZCi8NRcEa+mau3u1uE5Vwy+JnG6MSbdazs7vg+9mcMgGRQeIkfjCNQ/Y+jlfdxfFaLUONbGohvFEADWrVqM11+0gV9zwUl2wcic1N0nvYNK4H2Qf3YD0TU2F+z6ebr8X6gBDE4Q2yusxTuMwduCoLkYALpRz9z7+EG66f4d4t5tBzA5EyPMSBhS+CrbGFgluHrGTjcwI1hSJj+blmoWs+P70ZudhgzCdDaxAsv6HRwX7PVBapGNiMeJQZRozJ3TwNknHYPLX7zeXnT6Sh5uNmXqATsHlML1QuA6otbuf+9b/ws3AMcbFLy1dntseT1svMOyeJsK6kvSS6r58d0TfMfmZ8UPHt2LJ/e1EWmLmpIIJWXbuEtVbC9hdKZ407hMzupV9vbqCgHMHD6IXmcWUoVeQZCtKfGemKjsQGJmxLFBL0kQBBKrli/AxWeuwWXnrLUnH7eUpFAEAEnS20+kr4/j6LpWa8Ge/OCRTWX/Is7hF2YAg8JC5hGWW43/bMFXKhkeDwoAMKbakdm88xDd+eg+emj7IXp2bBbdKIEQAmGQhol8YDIfVsrZyt7W0GLKwhYFAkiApMTsxCH02jMQOck1G/gk5mKZZrormJFoi0RrGMsIQ4kVi0Zw9vpj+WWnr+bT1h7FC0eHZOqONLSJtgvQV4TC54ha+cH/u7v7F6QBHNkQuAY9c5lB8B4QzpeyXoAoE9Md8/ieKXroyTH6yTOHacf+KUy0I/SStECUUkAKAUE5fZq9QcwyXGecASFSXEAQZsb2Ie7MAkTQJoGJEyRJBK11sad4qFnHwrnDWL1sHk46bimfvnYpr1+5hBfPGy222hnTA2DvZjZ/odT+m4nWRC+kg3/BGUBhCB/8oMDVV5NjCBLonGG1fY2FeDkzbwyCVslkMpE5MN3FzgNtPLV/hp49NE07DkzTockuJmYitCODKE5gtC3mGUW2sElQunfYFX6ATTA9vhe610UQSDRDgblDIRbOHcKq5Qt59VGLef2qRbx62TwsHq0Dol4cehK3LRFtFoTvCoWvA80H3c9x9dVX8zXXXGNfSM/7BWcAR/IIuVdIkunTJIWXWdaXM9PyIGwt8L/TQGuN2U5iDk33sH+iJyY7CU23u5ic6WKmlyZo1uY6uqmqeU1JNGsSQ40AjUAgEMDonAYvnt+yi4YbGG6FUgW1vkeWxO0xMO8hqW5SzDcjaDxMRJGLgbyQbvx/GAOoJotZwugaA/V6k8cq1dgAG7+USa1kY9YKJVYKIQIh6p5RlP9bXe/o1nE5xphj/eWeUjY9GObEWr2TKNhGnOyECL+vdXdLvT76tHvA2aHzLzK5+3/GAPqN4UYBXIFBKBkzL4njeAmQbBBCXgKrZwE6hURwjjERi2LRMA3g6JflnmXLUtSIbXKvBW0SQg1Za24Dgi1hGO4nov2D0E7gRgBX2Bf6obu//i+O5B4kI+uA5QAAAABJRU5ErkJggg==" alt=""></button>
+      </div>
+
+      <!-- Indicazione: la voce sta parlando -->
+      <div class="speakbar" id="speakbar" hidden><span class="ico" aria-hidden="true">&#128264;</span> Sta parlando&hellip;</div>
+
+      <!-- COMPOSE -->
+      <div class="compose">
+        <div class="msgcard">
+          <div class="phrase" id="phrase" role="button" tabindex="0" aria-label="Tocca per scrivere con la tastiera">
+            <div class="eyebrow" aria-hidden="true">MESSAGGIO</div>
+            <div class="status">Sto preparando la risposta&hellip;</div>
+            <div class="text placeholder" id="phraseText">Tocca qui per scrivere&hellip;</div>
+          </div>
+          <div class="msgactions">
+            <button class="msgbtn msg-trash" id="clearHomeBtn" type="button" aria-label="Cancella il messaggio"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6.5 7l1 13h9l1-13"/></svg></button>
+            <button class="msgbtn msg-speak" data-speak="__phrase__" type="button" aria-label="Leggi il messaggio ad alta voce"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a4 4 0 0 1 0 7"/></svg><span class="lab">Parla</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parole predittive in composizione -->
+      <div class="home-suggests" id="homeSuggests" hidden></div>
+
+      <!-- INTENTIONS -->
+      <div class="intentions">
+        <button class="btn intent yes" type="button" data-say="Sì">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span class="lab">SÌ</span>
+        </button>
+        <button class="btn intent maybe" type="button" data-say="Non lo so">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 9a3.5 3.5 0 1 1 5 3.2c-1 .6-1.6 1.2-1.6 2.3v.5"/><circle cx="12" cy="18.4" r="1.05" fill="currentColor" stroke="none"/></svg></span><span class="lab">NON SO</span>
+        </button>
+        <button class="btn intent no" type="button" data-say="No">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="lab">NO</span>
+        </button>
+      </div>
+
+      <!-- MIDDLE -->
+      <div class="middle">
+        <div class="side">
+          <button class="btn btn-help" type="button" id="helpBtn" aria-label="Aiuto, ripete finché non premi stop">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4l1.6-2z"/><path d="M9.8 20a2.2 2.2 0 0 0 4.4 0"/></svg></span><span class="lab">AIUTO</span>
+          </button>
+        </div>
+        <div class="contexts" id="contexts"></div>
+      </div>
+
+      <!-- QUICK BAR -->
+      <div class="quickbar">
+        <button class="btn quick" type="button" data-say="Vaffanculo"><span class="ico" aria-hidden="true">&#128545;</span><span class="lab">VAFFANCULO</span></button>
+        <button class="btn quick" type="button" data-say="Per favore"><span class="ico" aria-hidden="true">&#128591;</span><span class="lab">PER FAVORE</span></button>
+        <button class="btn quick" type="button" data-say="Non ho capito"><span class="ico" aria-hidden="true">&#10068;</span><span class="lab">NON HO CAPITO</span></button>
+        <button class="btn quick" type="button" data-say="Lasciami finire"><span class="ico" aria-hidden="true">&#9998;</span><span class="lab">LASCIAMI FINIRE</span></button>
+      </div>
+
+      <!-- CONTEXT OVERLAY -->
+      <div class="overlay" id="overlay" role="dialog" aria-label="Bisogni del contesto">
+        <div class="ovhead">
+          <button class="btn btn-back" type="button" id="backBtn">
+            <span class="ico" aria-hidden="true">&#8592;</span><span class="lab">INDIETRO</span>
+          </button>
+          <div class="ovtitle" id="ovtitle"></div>
+        </div>
+        <div class="ovgrid" id="ovgrid"></div>
+      </div>
+
+      <!-- KEYBOARD -->
+      <div class="keyboard" id="keyboard" role="dialog" aria-label="Tastiera accessibile">
+        <div class="kb-top">
+          <div class="kb-field empty" id="kbField">Scrivi qui&hellip;</div>
+          <button class="btn kb-speak" type="button" id="kbSpeak">
+            <span class="ico" aria-hidden="true">&#128264;</span><span class="lab">PARLA</span>
+          </button>
+        </div>
+        <div class="suggests" id="suggests"></div>
+        <div class="freq-row" id="freqRow" hidden>
+          <button class="btn freq" type="button" id="freqBtn" aria-label="Usa la frase più usata">
+            <span class="ico" aria-hidden="true">&#9733;</span>
+            <span class="eyebrow">Più usata</span>
+            <span class="lab">&hellip;</span>
+          </button>
+          <button class="btn freq-del" type="button" id="freqDel" aria-label="Cancella questa frase dalle più usate">&#10005;</button>
+        </div>
+        <div class="kb-rows" id="kbRows"></div>
+        <div class="kb-actions">
+          <button class="btn k-space" type="button" id="kSpace"><span class="lab">SPAZIO</span></button>
+          <button class="btn k-back" type="button" id="kBack"><span class="ico" aria-hidden="true">&#9003;</span><span class="lab">CANCELLA<br>LETTERA</span></button>
+          <button class="btn k-backword" type="button" id="kBackWord"><span class="ico" aria-hidden="true">&#9003;</span><span class="lab">CANCELLA<br>PAROLA</span></button>
+          <button class="btn k-clear" type="button" id="kClear"><span class="lab">CANCELLA<br>TUTTO</span></button>
+          <button class="btn k-close" type="button" id="kClose"><span class="lab">CHIUDI</span></button>
+        </div>
+      </div>
+
+      <!-- OPZIONI CAREGIVER -->
+      <div class="options" id="options" role="dialog" aria-label="Opzioni caregiver">
+        <div class="opt-head">
+          <div class="opt-title" id="optTitle">Opzioni</div>
+          <button class="opt-btn opt-close" id="optClose" type="button">CHIUDI</button>
+        </div>
+        <div class="opt-body" id="optBody"></div>
+      </div>
+
+      <!-- CONFIRM -->
+      <div class="confirm" id="confirm" role="dialog" aria-label="Conferma">
+        <div class="confirm-box">
+          <div class="confirm-msg" id="confirmMsg">Cancellare tutto?</div>
+          <div class="confirm-actions">
+            <button class="btn c-cancel" type="button" id="confirmNo"><span class="lab">ANNULLA</span></button>
+            <button class="btn c-ok" type="button" id="confirmYes"><span class="ico" aria-hidden="true">&#128465;</span><span class="lab">SÌ, CANCELLA</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Salvataggio locale sul dispositivo (permanente e privato). try/catch:
+  // nell'anteprima in chat può essere disattivato, sull'iPad funziona.
+  var LS={
+    get:function(k,d){ try{ var v=localStorage.getItem("untocco_"+k); return v==null?d:JSON.parse(v); }catch(e){ return d; } },
+    set:function(k,v){ try{ localStorage.setItem("untocco_"+k, JSON.stringify(v)); }catch(e){} }
+  };
+
+  // ---- impostazioni (modificabili dal pannello opzioni caregiver) ----
+  var DEFAULT_CONTACTS=[
+    {name:"Anna",rel:"moglie"},{name:"Francesco",rel:"figlio"},{name:"Roberta",rel:"figlia"},{name:"Michele",rel:"figlio"},
+    {name:"Alice",rel:"figlia"},{name:"Andrea",rel:"genero"},{name:"Fabrizio",rel:"genero"}
+  ];
+  var settings=LS.get("settings", {});
+  if(!settings.contacts) settings.contacts=DEFAULT_CONTACTS;
+  if(!settings.phrases) settings.phrases=[]; // frasi personalizzate del caregiver
+  if(settings.minInterval==null) settings.minInterval=350;   // ms anti doppio-tocco
+  if(settings.pressDuration==null) settings.pressDuration=0; // ms durata minima pressione (0=immediato)
+  if(settings.feedback==null) settings.feedback=true;        // conferma visiva/sonora
+  if(!settings.hidden) settings.hidden={};                    // funzioni nascoste
+  if(settings.pin==null) settings.pin="";                     // codice caregiver
+  function saveSettings(){ LS.set("settings", settings); }
+  function femaleRel(rel){ return /figlia|moglie|madre|mamma|sorella|nonna|zia|nuora|nipote|amica|assistente/i.test(rel||""); }
+  var EXTRA_CONTACTS=["il Dott. Fabio","il medico","l'assistente"];
+  function contactNames(){ return settings.contacts.map(function(c){return c.name;}).concat(EXTRA_CONTACTS); }
+
+  var contexts = [
+    {key:"casa", em:"<svg viewBox='0 0 24 24'><path d='M4 11l8-6 8 6'/><path d='M6 10v9h12v-9'/></svg>", lab:"Casa", sub:"Stanze, oggetti, TV", needs:[
+      {em:"\u{1F975}", t:"Ho caldo"},
+      {em:"\u{1F976}", t:"Ho freddo"},
+      {em:"\u{1F4A1}", t:"Accendi la luce", sub:[
+        {em:"\u{1F373}", t:"Accendi la luce in cucina, per favore", lab:"Cucina"},
+        {em:"\u{1F6CB}", t:"Accendi la luce in sala, per favore", lab:"Sala"},
+        {em:"\u{1F6AA}", t:"Accendi la luce in corridoio, per favore", lab:"Corridoio"},
+        {em:"\u{1F324}", t:"Accendi la luce in terrazzo, per favore", lab:"Terrazzo"},
+        {em:"\u{1F6CB}", t:"Accendi la luce in soggiorno, per favore", lab:"Soggiorno"},
+        {em:"\u{1F333}", t:"Accendi la luce in giardino, per favore", lab:"Giardino"}
+      ]},
+      {em:"\u{1F6CF}", t:"Vorrei riposare a letto, per favore"},
+      {em:"\u{1FA9F}", t:"Apri la finestra, per favore"},
+      {em:"\u{1F4FA}", t:"Accendi la televisione, per favore"},
+      {em:"\u{1F4BB}", t:"Portami il computer, per favore"},
+      {em:"\u{1F4F1}", t:"Portami il telefono, per favore"},
+      {em:"\u{1F6CB}", t:"Accompagnami sulla poltrona, per favore"},
+      {em:"\u{1F37D}", t:"Accompagnami al tavolo, per favore"},
+      {em:"\u{1F453}", t:"Portami gli occhiali, per favore"},
+      {em:"\u{1F4D6}", t:"Vorrei leggere, per favore"},
+      {em:"\u{1F4DA}", t:"Portami il libro, per favore"},
+      {em:"\u{1F3B5}", t:"Vorrei ascoltare la musica, per favore"},
+      {em:"\u{270D}\uFE0F", t:"Vorrei scrivere, per favore"}
+    ]},
+    {key:"cibo", em:"<svg viewBox='0 0 24 24'><path d='M7 3v6M5 3v4a2 2 0 0 0 2 2M9 3v4a2 2 0 0 1-2 2M7 11v10'/><path d='M16.5 3c-1.6 0-2.6 2.2-2.6 5.2 0 2.4 1 4.3 2.1 4.8V21'/></svg>", lab:"Cibo e bevande", sub:"Fame, sete, gusti", needs:[
+      {em:"\u{1F35D}", t:"Ho fame"},
+      {em:"\u{1F4A7}", t:"Ho sete"},
+      {em:"\u{1F6B0}", t:"Vorrei dell'acqua, per favore"},
+      {em:"☕", t:"Vorrei un caffè, per favore"},
+      {em:"\u{1F957}", t:"Basta così", s:"quantità"},
+      {em:"\u{1F958}", t:"Vorrei mangiare qualcosa, per favore"},
+      {em:"\u{1F964}", t:"Mi prepari la borraccia, per favore"},
+      {em:"\u{1F377}", t:"Vorrei del vino, per favore"},
+      {em:"\u{1F375}", t:"Vorrei un tè caldo, per favore"}
+    ]},
+    {key:"salute", em:"<svg viewBox='0 0 24 24'><path d='M3 12.5h3.5l1.8-4 3 8.5 2-6 1.4 1.5H21'/></svg>", lab:"Salute", sub:"Dolore, farmaci, medico", needs:[
+      {em:"\u{1F915}", t:"Ho dolore"},
+      {em:"\u{1FAC1}", t:"Non riesco a respirare bene"},
+      {em:"\u{1F48A}", t:"Vorrei le medicine, per favore"},
+      {em:"\u{1F469}‍⚕️", t:"Chiamate il medico, per favore"},
+      {em:"\u{1F504}", t:"Aiutatemi a cambiare posizione, per favore"},
+      {em:"\u{1F634}", t:"Sono stanco"},
+      {em:"\u23F0", t:"È l'ora della fisioterapia"},
+      {em:"\u{1F4AA}", t:"Vorrei fare gli esercizi, per favore"},
+      {em:"\u{1F9CD}", t:"Aiutami a fare la fisioterapia, per favore"},
+      {em:"\u{1F9D1}\u200D\u2695\uFE0F", t:"Chiama il Dott. Fabio, per favore", s:"fisioterapista"}
+    ]},
+    {key:"persone", em:"<svg viewBox='0 0 24 24'><circle cx='9' cy='8' r='3'/><path d='M3.5 19a5.5 5.5 0 0 1 11 0'/><path d='M16 6a3 3 0 0 1 0 6'/><path d='M17 14.5a5.5 5.5 0 0 1 3.5 4.5'/></svg>", lab:"Persone", sub:"Famiglia, amici, chiamate", needs:[
+      {em:"\u{1F469}", t:"Chiama Anna, per favore", s:"moglie"},
+      {em:"\u{1F469}", t:"Chiama Roberta, per favore", s:"figlia"},
+      {em:"\u{1F468}", t:"Chiama Michele, per favore", s:"figlio"},
+      {em:"\u{1F469}", t:"Chiama Alice, per favore", s:"figlia"},
+      {em:"\u{1F468}", t:"Chiama Andrea, per favore", s:"genero"},
+      {em:"\u{1F468}", t:"Chiama Fabrizio, per favore", s:"genero"},
+      {em:"\u{1F4DE}", t:"Vorrei chiamare", s:"scegli il nome", compose:true}
+    ]},
+    {key:"bagno", em:"<svg viewBox='0 0 24 24'><path d='M4 12h16'/><path d='M12 12V6a3 3 0 0 1 6 0'/><path d='M8 15.5v1.5M12 15.5v2.5M16 15.5v1.5'/></svg>", lab:"Bagno e igiene", sub:"Toilette, doccia, vestirsi", needs:[
+      {em:"\u{1F6BD}", t:"Devo andare in bagno, per favore"},
+      {em:"\u{1F6BF}", t:"Vorrei lavarmi, per favore"},
+      {em:"\u{1FAA5}", t:"Vorrei fare la doccia, per favore"},
+      {em:"\u{1F455}", t:"Vorrei vestirmi, per favore"},
+      {em:"\u{1FAA5}", t:"Devo lavarmi i denti, per favore"},
+      {em:"\u{1F9FC}", t:"Vorrei lavarmi le mani, per favore"}
+    ]},
+    {key:"spostamenti", em:"<svg viewBox='0 0 24 24'><path d='M12 3v18M3 12h18'/><path d='M12 3l-2.4 2.4M12 3l2.4 2.4M12 21l-2.4-2.4M12 21l2.4-2.4M3 12l2.4-2.4M3 12l2.4 2.4M21 12l-2.4-2.4M21 12l2.4 2.4'/></svg>", lab:"Spostamenti", sub:"Alzarsi, uscire, posizione", needs:[
+      {em:"\u{1F6CF}", t:"Vorrei andare in camera, per favore"},
+      {em:"\u{1F6CB}", t:"Vorrei andare in soggiorno, per favore"},
+      {em:"\u{1F37D}", t:"Vorrei andare in sala, per favore"},
+      {em:"\u{1F6BD}", t:"Vorrei andare in bagno, per favore"},
+      {em:"\u{1FA91}", t:"Vorrei andare in poltrona, per favore"},
+      {em:"\u{1F333}", t:"Vorrei andare in giardino, per favore"},
+      {em:"\u{1F9CD}", t:"Vorrei alzarmi, per favore"},
+      {em:"\u{1F9ED}", t:"Andiamo da un'altra parte, per favore"}
+    ]}
+  ];
+
+  // ---- speech ----
+  var synth = window.speechSynthesis;
+  var voice = null;
+  var helpRepeating = false; // AIUTO: ripete finché non si preme STOP o un altro comando
+  function pickVoice(){
+    if(!synth) return;
+    var it=(synth.getVoices()||[]).filter(function(v){ return /^it/i.test(v.lang); })
+      .sort(function(a,b){ return (b.localService?1:0)-(a.localService?1:0); }); // locali (offline) prima
+    // Safari espone alle web app solo un insieme ridotto di voci: per l'italiano Alice.
+    voice = it.find(function(v){ return /alice/i.test(v.name); }) || it[0] || null;
+  }
+  if(synth){ pickVoice(); if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=pickVoice; }
+  if(!synth) document.body.classList.add("no-voice");
+
+  // iOS/Safari: la sintesi vocale resta "sospesa" finché non parte da un gesto dell'utente.
+  // Al primo tocco la sblocchiamo con una frase muta, così i tocchi successivi parlano.
+  var __voiceUnlocked=false;
+  function unlockVoice(){
+    if(__voiceUnlocked||!synth) return;
+    __voiceUnlocked=true;
+    try{ synth.resume(); }catch(e){}
+    try{ var u=new SpeechSynthesisUtterance(" "); u.volume=0; u.lang="it-IT"; synth.speak(u); }catch(e){}
+    if(!voice) pickVoice();
+  }
+  document.addEventListener("touchend", unlockVoice, {passive:true});
+  document.addEventListener("pointerdown", unlockVoice, {passive:true});
+  document.addEventListener("click", unlockVoice, true);
+
+  // AIUTO ripetuto
+  function speakHelp(){
+    if(!helpRepeating||!synth) return;
+    try{
+      if(!voice) pickVoice();
+      var u=new SpeechSynthesisUtterance("Aiuto");
+      u.lang="it-IT"; u.rate=1; u.pitch=1; if(voice) u.voice=voice;
+      u.onstart=function(){ setSpeaking(true); };
+      u.onend=function(){ setSpeaking(false); if(helpRepeating) setTimeout(speakHelp, 2000); };
+      synth.speak(u);
+    }catch(e){}
+  }
+  function startHelp(){
+    if(!synth) return;
+    helpRepeating=true;
+    var b=document.getElementById("helpBtn"); if(b) b.classList.add("repeating");
+    if(synth.speaking||synth.pending){ synth.cancel(); setTimeout(speakHelp,90); }
+    else { try{ synth.resume(); }catch(e){} speakHelp(); }
+  }
+  function stopHelp(){
+    helpRepeating=false;
+    var b=document.getElementById("helpBtn"); if(b) b.classList.remove("repeating");
+    if(synth) synth.cancel();
+  }
+
+  function say(text){
+    if(!synth){ return; }
+    try{
+      stopHelp();                       // un nuovo comando ferma l'allarme AIUTO
+      if(!voice) pickVoice();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang="it-IT"; u.rate=1;
+      u.pitch = 1;
+      if(voice) u.voice=voice;
+      u.onstart=function(){ setSpeaking(true); };
+      u.onend=function(){ setSpeaking(false); };
+      if(settings.feedback) beep();
+      // iOS: se qualcosa è già in riproduzione, annulla e riparla con un piccolo ritardo
+      // (cancel() subito prima di speak() su iOS "mangia" la frase). Se non c'è nulla in corso,
+      // parla subito dentro il gesto del tocco: è così che iOS sblocca l'audio.
+      if(synth.speaking || synth.pending){
+        synth.cancel();
+        setTimeout(function(){ try{ synth.resume(); synth.speak(u); }catch(e){} }, 90);
+      } else {
+        try{ synth.resume(); }catch(e){}
+        synth.speak(u);
+      }
+    }catch(e){}
+  }
+
+  // ---- phrase history (mockup: storico d'esempio, tenuto in memoria) ----
+  var history=LS.get("history", {
+    "Voglio andare in bagno":9,
+    "Ho sete":7,
+    "Ho dolore":6,
+    "Voglio riposare a letto":5,
+    "Chiamate il medico":3
+  });
+  function topPhrase(){
+    var best=null,bestN=-1;
+    for(var k in history){ if(history[k]>bestN){ best=k; bestN=history[k]; } }
+    return best;
+  }
+  function renderFreq(){
+    var row=document.getElementById("freqRow");
+    var el=document.getElementById("freqBtn");
+    if(!row||!el) return;
+    var p=topPhrase();
+    if(p){ el.querySelector(".lab").textContent=p; row.hidden=false; }
+    else { row.hidden=true; }
+  }
+  function recordPhrase(text){
+    text=(text||"").trim();
+    if(!text || text.split(/\s+/).length<2){ return; } // conta solo le frasi, non le parole singole
+    history[text]=(history[text]||0)+1;
+    LS.set("history", history);
+    renderFreq();
+  }
+
+  // ---- in-app confirm (window.confirm è bloccato nell'anteprima sandbox) ----
+  var confirmEl=document.getElementById("confirm");
+  var confirmMsg=document.getElementById("confirmMsg");
+  var confirmCb=null;
+  function askConfirm(msg, cb){
+    confirmMsg.textContent=msg; confirmCb=cb; confirmEl.classList.add("open");
+  }
+  document.getElementById("confirmYes").addEventListener("click", function(){
+    confirmEl.classList.remove("open");
+    var f=confirmCb; confirmCb=null; if(f) f();
+  });
+  document.getElementById("confirmNo").addEventListener("click", function(){
+    confirmEl.classList.remove("open"); confirmCb=null;
+  });
+
+  // ---- phrase state ----
+  var phrase=document.getElementById("phrase");
+  var phraseText=document.getElementById("phraseText");
+  var current="";
+  function setPhrase(t){
+    current=t||"";
+    if(current){ phraseText.textContent=current; phraseText.classList.remove("placeholder"); }
+    else { phraseText.textContent="Tocca qui per scrivere…"; phraseText.classList.add("placeholder"); }
+    if(typeof renderHomeSuggests==="function"){ renderHomeSuggests(); }
+  }
+  // gentle "preparing" affordance whenever a phrase is staged but not yet spoken
+  function preparing(on){ phrase.classList.toggle("preparing", !!on); }
+
+  // ---- costruzione contesti (Persone e "Le mie frasi" sono dinamici) ----
+  var ctxWrap=document.getElementById("contexts");
+  function buildPersone(){
+    var p=null; for(var i=0;i<contexts.length;i++){ if(contexts[i].key==="persone"){ p=contexts[i]; break; } }
+    if(!p) return;
+    p.needs=settings.contacts.map(function(c){
+      return {em: femaleRel(c.rel)?"\u{1F469}":"\u{1F468}", t:"Chiama "+c.name, s:c.rel};
+    });
+    p.needs.push({em:"\u{1F4DE}", t:"Vorrei chiamare", s:"scegli il nome", compose:true});
+  }
+  function buildMyPhrases(){
+    for(var i=contexts.length-1;i>=0;i--){ if(contexts[i].key==="miefrasi") contexts.splice(i,1); }
+    if(settings.phrases && settings.phrases.length){
+      contexts.push({key:"miefrasi", em:"⭐", lab:"Le mie frasi",
+        needs: settings.phrases.map(function(t){ return {em:"\u{1F4AC}", t:t}; })});
+    }
+  }
+  var ICON_BG={casa:"#2d5f7a",cibo:"#8a6a1e",salute:"#6f3a52",persone:"#3c5f45",bagno:"#2d6178",spostamenti:"#4b4a70",miefrasi:"#4b4a70"};
+  var ICON_INK={};
+  function renderContexts(){
+    contacts=contactNames();
+    buildPersone(); buildMyPhrases();
+    ctxWrap.innerHTML="";
+    contexts.forEach(function(c){
+      if(settings.hidden["ctx_"+c.key]) return; // funzione nascosta dal caregiver
+      var b=document.createElement("button");
+      b.className="btn ctx"; b.type="button";
+      b.innerHTML='<span class="ico ctxicon" aria-hidden="true">'+c.em+'</span><span class="ctxtext"><span class="lab">'+c.lab+'</span>'+(c.sub?'<span class="sub">'+c.sub+'</span>':'')+'</span>';
+      var bg=ICON_BG[c.key];
+      if(bg){ b.style.backgroundColor=bg; b.style.borderColor=bg; b.style.color=ICON_INK[c.key]||"#ffffff"; }
+      b.addEventListener("click", function(){ openCtx(c); });
+      ctxWrap.appendChild(b);
+    });
+  }
+  renderContexts();
+
+  // ---- overlay ----
+  var overlay=document.getElementById("overlay");
+  var ovtitle=document.getElementById("ovtitle");
+  var ovgrid=document.getElementById("ovgrid");
+  var ovStack=[]; // livelli aperti (contesto -> eventuale sotto-menù)
+  function closeOverlay(){ overlay.classList.remove("open"); ovStack=[]; try{phrase.focus();}catch(e){} }
+  function renderLevel(){
+    var lvl=ovStack[ovStack.length-1];
+    ovtitle.innerHTML='<span class="em" aria-hidden="true">'+lvl.em+'</span>'+lvl.title;
+    ovgrid.innerHTML="";
+    lvl.needs.forEach(function(n){
+      var b=document.createElement("button");
+      b.className="btn need"; b.type="button";
+      var label=n.lab||n.t;
+      b.innerHTML='<span class="ico" aria-hidden="true">'+n.em+'</span><span class="lab">'+label+(n.s?'<small>'+n.s+'</small>':'')+'</span>';
+      b.addEventListener("click", function(){
+        if(n.sub){ ovStack.push({title:(n.lab||n.t), em:n.em, needs:n.sub}); renderLevel(); return; } // apre il sotto-menù
+        if(n.compose){ setPhrase(n.t+" "); preparing(true); closeOverlay(); return; } // in composizione, mostra i nomi
+        setPhrase(n.t); say(n.t); recordPhrase(n.t); preparing(false); // resta nella sezione: si esce con INDIETRO
+      });
+      ovgrid.appendChild(b);
+    });
+    overlay.classList.add("open");
+    setTimeout(function(){ var el=document.getElementById("backBtn"); if(el) el.focus(); },0);
+  }
+  function openCtx(c){ ovStack=[{title:c.lab, em:c.em, needs:c.needs}]; renderLevel(); }
+  document.getElementById("backBtn").addEventListener("click",function(){
+    if(ovStack.length>1){ ovStack.pop(); renderLevel(); } // torna al livello superiore
+    else { closeOverlay(); }
+  });
+
+  // ---- immediate say buttons ----
+  document.querySelectorAll("[data-say]").forEach(function(el){
+    el.addEventListener("click", function(){
+      var t=el.getAttribute("data-say");
+      say(t);
+      // intentions & help also stage into the phrase field; quickbar just speaks
+      if(el.classList.contains("intent")){ setPhrase(t); preparing(false); }
+    });
+  });
+
+  // ---- speak phrase ----
+  var __speakBtn=document.querySelector('[data-speak="__phrase__"]');
+  if(__speakBtn) __speakBtn.addEventListener("click", function(){
+    if(current){ say(current); recordPhrase(current); preparing(false); }
+    else { say("La frase è vuota"); }
+  });
+  var __stopBtn=document.getElementById("stopBtn");
+  if(__stopBtn) __stopBtn.addEventListener("click", function(){ stopHelp(); if(synth) synth.cancel(); });
+  document.getElementById("helpBtn").addEventListener("click", function(){
+    if(helpRepeating){ stopHelp(); }   // secondo tocco: ferma
+    else { startHelp(); }              // primo tocco: avvia
+  });
+  var __clearHomeBtn=document.getElementById("clearHomeBtn");
+  if(__clearHomeBtn) __clearHomeBtn.addEventListener("click", function(){
+    if(!current){ return; }
+    askConfirm("Cancellare tutta la frase?", function(){
+      if(synth) synth.cancel();
+      setPhrase(""); preparing(false);
+    });
+  });
+
+  // ---- theme toggle ----
+
+  var root=document.documentElement;
+  var savedTheme=LS.get("theme", null);
+  if(savedTheme){ root.setAttribute("data-theme", savedTheme); } // applica il tema salvato
+  document.getElementById("themeBtn").addEventListener("click", function(){
+    var cur=root.getAttribute("data-theme");
+    var next = cur==="dark" ? "light" : (cur==="light" ? "dark" :
+      (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "light":"dark"));
+    root.setAttribute("data-theme", next);
+    LS.set("theme", next);
+  });
+
+  // ---- keyboard ----
+  var keyboard=document.getElementById("keyboard");
+  var kbField=document.getElementById("kbField");
+  var kbRows=document.getElementById("kbRows");
+  var suggests=document.getElementById("suggests");
+  var kbText="";
+  var LAYOUTS={
+    abc:[ "QWERTYUIOP".split(""), "ASDFGHJKL".split(""), "ZXCVBNM".split("") ],
+    sym:[ ["1","2","3","4","5","6","7","8","9","0"],
+          [".",",",";",":","!","?","'","\"","¿","¡"],
+          ["(",")","-","–","…","@","/","%","&","€"] ]
+  };
+  var kbMode="abc"; // "abc" lettere, "sym" numeri e punteggiatura
+
+  // Starter words (empty field), next-word prediction (after a completed word),
+  // and a small vocabulary for completing the word being typed.
+  var SUGG=8; // numero di parole predittive mostrate
+  var starters=["voglio","non","ho","vorrei","perché","grazie","aspetta","aiuto","adesso"];
+  var nextWord={
+    "voglio":["un","il","la","andare","bere","mangiare","riposare","parlare"],
+    "vorrei":["un","del","un po'","parlare","riposare","bere","sapere","chiedere"],
+    "non":["voglio","ho","lo so","riesco","mi","è","va","adesso"],
+    "ho":["fame","sete","freddo","caldo","dolore","bisogno","sonno","paura"],
+    "un":["momento","caffè","bicchiere","po' d'acqua","aiuto","attimo","medico","cuscino"],
+    "il":["bagno","caffè","medico","letto","telefono","dolore","cibo","cuscino"],
+    "la":["luce","porta","finestra","televisione","mano","medicina","doccia","testa"],
+    "andare":["in bagno","a casa","a letto","fuori","via","di là","al medico","a dormire"],
+    "riesco":["a respirare","a muovermi","a dormire","a parlare","a mangiare","a stare seduto"],
+    "bisogno":["di aiuto","di riposo","del bagno","di te","di acqua","di medicine","di dormire"],
+    "grazie":["mille","di tutto","a te","davvero"],
+    "_next":["e","un","per","di","con","a","il","la"]
+  };
+  // Dizionario esteso: le ~8000 parole italiane più frequenti (fonte: wordfreq),
+  // ordinate per frequenza; il filtro per prefisso conserva quest'ordine.
+  var vocab=["di","che","il","la","in","non","un","per","del","una","le","si","con","della","da","sono","ma","al","ha","come","più","dei","se","nel","mi","alla","anche","lo","gli","delle","questo","ho","ci","su","ad","dal","solo","essere","io","nella","ti","cui","era","stato","quando","tutti","ed","questa","tutto","cosa","hanno","tra","fatto","prima","suo","loro","parte","perché","anni","due","sia","sua","ai","fare","così","dalla","degli","dopo","sul","alle","uno","ne","poi","quello","sempre","fa","me","chi","ancora","molto","senza","mai","ogni","altri","ora","mio","può","quanto","mia","sulla","tempo","dove","vita","nei","no","già","sei","quella","quindi","secondo","hai","proprio","altro","bene","grazie","lavoro","modo","dai","noi","nelle","vi","casa","persone","qui","sta","te","volta","dire","italia","tu","giorno","mondo","questi","stata","lui","siamo","stesso","via","cose","grande","primo","contro","de","caso","li","mentre","tutte","abbiamo","quel","oggi","tanto","città","nuovo","detto","fine","po","qualche","quale","suoi","viene","aveva","anno","dalle","sarà","stati","storia","tre","tuo","va","avere","fino","foto","altre","dello","erano","meglio","queste","visto","ciò","meno","però","sarebbe","so","sotto","momento","aver","vedere","deve","forse","giorni","invece","nostro","agli","qualcosa","sembra","fosse","oltre","perchè","troppo","vero","allora","durante","fu","gente","legge","niente","posto","alcuni","fuori","nome","poco","roma","sto","voi","andare","insieme","punto","qualcuno","quelli","tipo","tutta","altra","davvero","dice","nessuno","nuova","quali","tua","verso","volte","comunque","far","lei","negli","possono","video","sui","voglio","male","nostra","numero","quasi","quelle","sì","certo","gruppo","persona","stessa","sue","sulle","dato","società","uomo","famiglia","nulla","ore","paese","problema","puoi","circa","credo","governo","molti","posso","potrebbe","col","ecco","esempio","ben","donne","fanno","italiano","milano","possibile","rispetto","sistema","vuole","abbia","adesso","bisogno","serie","allo","almeno","donna","miei","nazionale","the","generale","guerra","infatti","morte","sito","avuto","base","film","politica","pure","spesso","uomini","comune","sa","subito","centro","dio","fra","inoltre","parlare","scuola","vuoi","appena","buona","ce","idea","mano","siano","alcune","amici","avrebbe","causa","corso","forza","importante","mesi","presidente","seguito","senso","successo","basta","diritto","fai","nostri","parole","scritto","soprattutto","stanno","terra","padre","penso","piace","dare","devo","piano","porta","settimana","state","trovare","vengono","vista","genere","letto","migliore","pubblico","realtà","strada","livello","lungo","mezzo","problemi","ragazzi","seconda","tale","bella","diversi","grandi","particolare","pubblicato","ragione","settembre","dovrebbe","marzo","notte","possa","presso","quattro","san","situazione","attività","attraverso","bambini","consiglio","faccio","forma","italiana","libro","qualsiasi","sapere","saranno","soldi","buon","campo","dagli","faccia","figlio","prendere","progetto","propria","servizio","testa","accordo","amore","avevo","capo","conto","giusto","madre","periodo","preso","studio","tratta","unico","ciao","dati","diverse","gioco","grado","voce","facebook","forte","giro","gran","italiani","maggio","mese","nello","ricerca","unica","uso","capire","corpo","facendo","fatti","luogo","nemmeno","ormai","parla","partito","passato","quei","ragazza","tv","avanti","avete","euro","favore","figli","milioni","minuti","molte","sicurezza","tuttavia","acqua","aprile","casi","cuore","difficile","domanda","giugno","occhi","presente","siete","trova","vedo","articolo","bello","capito","chiesa","cioè","devi","ex","informazioni","lì","maggior","media","of","ottobre","parola","pochi","prova","sera","stai","sud","titolo","vorrei","cinque","europa","fatta","luglio","musica","nuove","nuovi","paesi","paura","pensare","primi","regione","sociale","sopra","stare","dietro","eh","inglese","maggiore","messo","nord","post","questione","re","termine","vicino","vivere","abbastanza","data","dell","dico","ero","giornata","lingua","mettere","piccolo","posizione","possibilità","potere","programma","usa","zona","controllo","cultura","devono","dovuto","febbraio","futuro","ieri","mercato","neanche","polizia","veramente","alto","amico","avevano","cura","davanti","dicembre","magari","nonostante","novembre","pare","personale","piuttosto","possiamo","punti","scelta","semplice","sviluppo","tanti","trovato","tuoi","ultimi","agosto","condizioni","dentro","fronte","leggi","luce","mare","motivo","opera","piu","poter","probabilmente","rapporto","resto","sai","sicuro","vari","ah","attenzione","farlo","gennaio","giovani","napoli","nessun","né","online","parti","risposta","ruolo","sola","stessi","vedi","guarda","linea","mente","ok","tempi","uniti","classe","continua","esperienza","mie","pubblica","ragazze","squadra","ultimo","voglia","all'interno","arte","auto","giovane","lavori","oppure","piazza","processo","qualità","ragazzo","risultati","significa","specie","aiuto","bisogna","capisco","colpa","domani","effetti","facile","genitori","ii","internazionale","libri","mani","produzione","repubblica","sinistra","spero","ufficiale","ultima","dobbiamo","fondo","leggere","libertà","massimo","metà","passo","popolo","presto","ricordo","sede","serve","spazio","studi","territorio","valore","varie","vera","verità","viaggio","bel","cerca","diritti","francia","mamma","migliori","moglie","new","nostre","pace","papa","politico","presenza","servizi","stiamo","vogliono","breve","civile","lavorare","ministro","nessuna","ordine","oro","pensa","piedi","rete","speciale","torino","tramite","all","calcio","centrale","codice","felice","pagina","piccola","provincia","riguarda","sentire","sole","vado","vanno","vede","web","cosi","internet","macchina","movimento","notizie","perdere","riguardo","sento","stile","cittadini","domande","età","inizio","nota","occasione","opere","passare","perso","prezzo","prodotto","qua","scusa","secolo","stagione","università","vai","and","cambiare","camera","corte","deciso","destra","ecc","formazione","locale","maria","mondiale","necessario","popolazione","portato","reale","soltanto","tante","terzo","testo","totale","twitter","versione","alta","bambino","chiaro","chiesto","dieci","diventare","finalmente","fratello","fuoco","interesse","maniera","natura","ovviamente","partire","piacere","portare","potuto","quanti","risultato","semplicemente","vostro","arriva","arrivare","aspetto","carta","cercare","completamente","comunità","danno","dicono","esiste","festa","forze","francese","importanti","libero","presenti","principale","pur","relazione","scrivere","stampa","tornare","usare","avrei","comuni","entrambi","francesco","furono","messaggio","mostra","prime","prossimo","scopo","simile","beh","cibo","direttamente","facciamo","figlia","finale","lato","lunga","prodotti","propri","sangue","tema","vecchio","voto","anzi","avesse","basso","contratto","costa","crisi","dallo","differenza","entrare","fortuna","fossero","guida","idee","immagini","incontro","iniziato","intorno","nero","notizia","ottenere","pena","principali","azione","chiedere","creare","discorso","diventa","entro","fin","lista","locali","morto","pari","pensiero","posti","proprietà","rischio","settimane","sicuramente","solito","soluzione","superiore","telefono","vale","andato","armi","atto","autore","campagna","colore","commissione","difesa","diretta","direttore","eventi","giovanni","infine","là","matrimonio","morti","porto","pratica","qualunque","scena","storico","usato","vivo","vogliamo","alcun","aria","assolutamente","capitale","guardare","mattina","militare","oh","riesco","salute","sentito","settore","stava","tali","to","ufficio","uscire","chiama","chiamato","difficoltà","firenze","lettera","mangiare","partita","pieno","precedente","prende","qual","resta","riferimento","signore","stesse","venire","animali","azienda","cielo","conoscere","diverso","dunque","esattamente","finito","germania","giochi","gruppi","lascia","modello","nato","parlando","politiche","poteva","progetti","ritorno","scoperto","social","vittoria","vostra","bianco","canzone","case","cercando","chiunque","compagnia","dicendo","dovrebbero","dubbio","effetto","entra","evitare","giustizia","medico","merito","mette","mille","noto","ovvero","passa","politici","potrebbero","radio","ricevuto","scorso","soli","struttura","termini","vuol","andata","aperto","bologna","capacità","comunicazione","dici","direzione","essendo","immagine","ministero","morire","normale","on","paolo","parlato","richiesta","rimane","siti","sé","volevo","avrà","confronti","gay","inizia","lasciare","lasciato","pensato","poche","precedenti","premio","rende","riesce","sacco","scuole","seguire","sette","son","studenti","tardi","tue","york","abbiano","attuale","aziende","bocca","chiedo","commenti","contrario","costruzione","documenti","edizione","elezioni","europea","farsi","fase","giocare","interessante","luoghi","membri","memoria","naturale","origine","paio","peggio","pensi","perfetto","presa","pubblici","purtroppo","regno","rosso","sezione","sugli","tenere","vediamo","vinto","voluto","voti","accesso","america","analisi","coloro","conoscenza","domenica","giusta","materiale","mezzi","motivi","pd","perche","piccoli","poiché","presenta","pro","proposta","proprie","provato","responsabilità","ricorda","sanno","sarebbero","simili","sociali","sport","succede","torna","trovano","uscita","visita","altrimenti","arrivato","arrivo","articoli","credere","distanza","dà","egli","km","lega","marito","miglior","obiettivo","pagare","palazzo","potete","scelto","spagna","teatro","abitanti","area","art","cambio","capelli","carlo","chiede","economia","economico","famiglie","libera","manca","metri","misura","necessità","provare","regole","santa","storie","terza","utenti","venezia","venne","aiutare","autorità","avrebbero","azioni","battaglia","buono","canale","cane","coi","culturale","dollari","est","faceva","google","importanza","insomma","interessi","italiane","odio","originale","parlamento","peso","proposito","prossima","segno","speranza","vive","appunto","aspetti","contatto","costituzione","danni","doveva","elementi","fate","festival","fonte","funzione","impossibile","lontano","massa","medio","messa","natale","nomi","oggetto","opinione","ottimo","pagine","pezzo","test","umano","verrà","affari","cinema","considerato","cristo","decisione","dolore","economica","energia","errore","fede","giuseppe","lavoratori","link","maggiori","particolarmente","permesso","piena","prove","quest'anno","raccolta","raggiungere","rapporti","roba","silenzio","stasera","unità","utile","venga","amo","aumento","benissimo","certa","club","conosco","continuare","coppia","crescita","critica","evento","farà","figura","funziona","gara","gestione","marco","parco","potrà","pronto","sala","santo","sbagliato","seguente","spese","tradizione","voci","zone","all'inizio","belle","colpo","conseguenza","conti","costo","creato","cucina","discussione","disposizione","esistono","essa","fiducia","finire","indietro","maggioranza","mancanza","numerosi","otto","passaggio","prego","profilo","rappresenta","rendere","rispondere","serio","strumenti","volete","alcuna","attacco","banca","commento","conosciuto","conte","do","fece","fonti","iniziare","intervento","londra","lotta","materia","onore","passi","personaggi","popolare","responsabile","sale","scegliere","scrive","segue","stazione","stelle","strade","antonio","bagno","cambiato","caratteristiche","chiamata","computer","concetto","concorso","contenuti","el","for","grave","mandato","occhio","ognuno","parigi","peccato","quantità","ragioni","religione","riforma","russia","sabato","sindaco","tribunale","vendita","voleva","ambiente","amministrazione","associazione","avendo","categoria","decreto","essi","fame","farmi","finché","fisica","forme","gesù","intanto","john","lavora","mantenere","pelle","prezzi","rimanere","risorse","sicilia","significato","sogno","sorella","supporto","teoria","trovo","ucciso","ultime","umani","valori","vecchia","verde","violenza","amica","bar","blog","certe","certi","cina","contesto","diversa","esso","estate","facilmente","forti","fratelli","intero","legale","miliardi","offerta","organizzazione","permette","piccole","pressione","privato","regioni","ricordi","riuscito","sappiamo","spettacolo","spirito","sullo","attualmente","caffè","coraggio","direi","dolce","europei","fatte","http","membro","modi","partecipazione","percorso","pericolo","pezzi","pietro","protezione","strumento","velocità","addirittura","anima","carattere","carne","cento","complesso","costi","dell'anno","diretto","diventato","doppio","dura","ebbe","esercito","femminile","giornale","iii","isola","it","malattia","massima","medici","metodo","militari","missione","momenti","nazionali","numeri","pensavo","posta","recente","relazioni","rimasto","rosa","sarei","schifo","sebbene","stia","strano","super","tecnica","titoli","tweet","visione","vittime","volo","vostri","aperta","aree","argomento","bellezza","bravo","campi","chiave","collaborazione","comprare","crede","denaro","dettagli","europeo","farti","fenomeno","genova","immediatamente","interno","minimo","museo","ovunque","partiti","prof","quante","seguenti","sembrano","serata","signora","specialmente","stavo","tanta","team","tecnologia","traffico","vino","zero","aspettare","attesa","caldo","caro","cellulare","cena","chat","condizione","consigli","contenuto","dedicato","documento","eppure","fiume","fondamentale","fondi","giù","imprese","mario","monte","notare","note","potrei","prese","ricordare","solamente","tecnico","tenuto","traduzione","ufficiali","volontà","all'estero","americani","americano","autori","blu","capitano","carriera","cervello","chiuso","co","colori","confronto","democrazia","episodio","esame","espressione","immagino","intera","inutile","linee","operazione","portata","possano","pubblicità","risulta","sistemi","spiega","stanza","studiare","tour","venerdì","album","bianca","caccia","carico","centri","certamente","cinese","commerciale","continuo","corrente","dipartimento","disponibile","dovrei","elettorale","entrambe","frattempo","imparare","informazione","leader","livelli","molta","ottenuto","perciò","pomeriggio","ponte","potenza","realizzato","secondi","signor","singolo","tipi","trattato","trovi","veloce","affrontare","ama","app","artisti","atti","conta","dormire","gratis","importa","inferiore","internazionali","letteratura","news","operazioni","ospedale","perdita","personali","potresti","pranzo","praticamente","pubblicazione","resistenza","reso","rivista","rivoluzione","salvini","scoprire","sentenza","servono","spalle","standard","tentativo","ve","vittima","accanto","aprire","aspetta","beni","buone","buoni","carica","comitato","diciamo","disse","enorme","et","farò","freddo","funzioni","giappone","giudice","interessa","migliaia","misure","nasce","nave","nazione","opportunità","pagamento","palermo","passione","personaggio","programmi","pronti","regionale","soldati","star","treno","triste","unione","vecchi","villa","volume","andiamo","andrea","attorno","bassa","cambia","cm","commercio","compito","comportamento","corsa","diceva","dimensioni","giornalista","guardia","impegno","limiti","luigi","maestro","morale","nascita","offre","oggetti","piani","presentato","principe","professore","renzi","risposte","risposto","scritta","segreto","sente","tratto","umana","uscito","vincere","affatto","anch'io","arrivati","chiara","chiaramente","cittadino","clienti","conferma","conosce","conseguenze","costruire","debito","errori","francesi","grosso","intenzione","lettura","limite","luna","occidentale","partecipare","poveri","principalmente","principio","quartiere","ridere","risolvere","sembrava","sostegno","terreno","utente","veniva","votare","aereo","aumentare","bilancio","canzoni","carte","cercato","cerco","david","debba","dichiarazione","esperienze","fianco","finita","fiori","frase","gas","intervista","istituto","live","messaggi","minore","minuto","modalità","negozio","nonché","numerose","parlano","privata","quarto","raggiunto","regime","regina","romano","scala","sguardo","sorta","spesa","top","utilizzato","account","avvocato","by","civili","com'è","comunale","corsi","creazione","dispiace","don","dovrà","durata","esce","formato","fossi","giapponese","lavorato","lettere","lezione","lingue","madonna","medicina","metti","moda","persino","prigione","primavera","reazione","ricerche","rossi","salvare","scrittore","show","spiegare","stranieri","superficie","tedesco","trasporto","vantaggio","aiuta","andando","appare","applicazione","assieme","capace","cliente","composto","considerazione","date","definizione","dell'ordine","desiderio","digitale","disegno","distribuzione","dover","evidente","famoso","generazione","giornali","identità","incidente","ingresso","istituzioni","latte","linguaggio","migliorare","mila","muro","nata","ottima","parliamo","particolari","perfetta","piacciono","punta","racconta","regola","sapevo","scienza","segretario","senti","sfida","soggetto","speciali","tratti","vento","vicini","villaggio","anti","arrivano","arrivata","berlusconi","brutto","castello","combattere","controllare","coscienza","credito","dipendenti","fan","filosofia","giudizio","grecia","iniziativa","is","moto","nazioni","nonna","norma","norme","partenza","pertanto","possibili","rai","ricco","software","storica","temi","tesoro","testi","tiene","utilizzo","venuto","vicenda","voler","you","accettare","acque","agenti","aggiungere","appuntamento","argomenti","cara","compagni","dando","decidere","dipende","file","immigrati","incredibile","manifestazione","mica","michael","minori","naturalmente","nera","positivo","posizioni","ricevere","risponde","scienze","soggetti","successivo","superiori","tecniche","trattamento","turno","vince","viva","youtube","aggiunto","artista","biblioteca","chiudere","concerto","contiene","divertente","dovremmo","droga","esistenza","fermo","finisce","fondazione","impresa","legno","messi","nemico","nove","oddio","olio","onda","pane","passati","pensando","porte","pp","quegli","richieste","riuscire","russo","scarpe","senato","spagnolo","strutture","vada","valle","veri","vissuto","alessandro","appello","ascoltare","bordo","buongiorno","caduta","cavallo","chiamare","comincia","completa","congresso","costante","crescere","croce","dovresti","educazione","fila","gioia","gusto","ipotesi","luca","lunedì","materiali","migranti","moderna","novità","ordini","palle","parlo","patrimonio","pensano","perfettamente","pianeta","previsto","principi","pronta","restare","ritardo","scoperta","sensazione","situazioni","sostenere","spiaggia","stadio","tal","toscana","tutela","usando","vacanza","vite","volto","alti","apertura","assenza","bellissima","bellissimo","cambiamento","chiese","classico","comando","cos'è","culturali","dichiarato","disponibili","emergenza","esserci","estremamente","farci","ferro","gravi","incontri","influenza","istruzione","modelli","naturali","papà","parli","proposte","protagonista","quadro","questioni","reato","ristorante","sentimenti","sessuale","sin","tasse","tavolo","tendenza","tizio","tradizionale","tranne","venti","vorrebbe","vostre","addosso","americana","anna","antica","assoluto","attivo","band","braccio","campione","cani","chiusura","ciclo","collega","colpito","conferenza","dimostrare","disco","entrata","esclusivamente","esempi","forum","gestire","giunta","hotel","iv","lezioni","mail","mancano","marina","max","montagna","nell'ambito","potente","potesse","preferito","prendi","promozione","pubbliche","quotidiano","racconto","rossa","sarò","scelte","simbolo","sorpresa","ulteriori","vieni","africa","agenzia","amicizia","andrà","angelo","assistenza","bere","bianchi","biglietto","chissà","confine","conflitto","considerare","contributo","corpi","descrizione","dovere","episodi","eravamo","facoltà","fini","fisico","fornire","fuga","gambe","generalmente","gentile","giardino","giocatori","industriale","inghilterra","interna","lago","macchine","padova","parere","partecipanti","povero","presentazione","referendum","regalo","sapete","semplici","successivamente","tesi","tocca","utilizzare","vedono","vestiti","andate","banche","blocco","borsa","capisce","clima","colleghi","completo","copertura","costretto","discutere","dubbi","es","esatto","giornalisti","guardando","mal","malattie","motore","notato","one","piacerebbe","pietra","poesia","prevede","proprietario","provenienti","puntata","reddito","relative","salvo","scambio","sensi","sicura","sogni","soluzioni","sufficiente","terre","tornato","ufficialmente","veneto","ali","antico","attimo","avessi","avranno","avviene","avviso","bassi","canto","cause","dedicata","dell'università","differenti","diffusione","dimostrato","distretto","epoca","intende","interni","latino","movimenti","occupa","organizzato","partecipato","pensieri","piede","pizza","poteri","privati","processi","propone","reali","realizzare","realizzazione","regolamento","relativi","ridurre","rischi","secoli","singoli","specifico","taglio","tasso","temperatura","tranquillo","verranno","acquisto","aiuti","altezza","apre","avessero","campionato","carcere","cittadinanza","collo","consenso","decisamente","destino","dominio","figure","finora","firma","garantire","giorgio","greco","laurea","legato","liberi","metto","neri","obiettivi","omicidio","opinioni","ovvio","pesce","puo","richiede","riconoscimento","romanzo","scusate","signori","smettere","svizzera","uguale","usata","utili","vicina","vivi","vuoto","arti","brutta","centinaia","colazione","condividere","dall","detta","dovesse","duro","elemento","espresso","faranno","ferma","generali","giocatore","gol","matematica","metodi","mezza","morta","musicale","offerte","ossia","paga","pagato","personalità","piante","pubblicata","relativa","riuscita","rotto","sardegna","segni","sino","speriamo","storici","time","uccidere","viso","visti","addio","andava","animale","appartamento","arma","arrestato","attiva","bambina","be","brasile","capitolo","cercano","chilometri","classifica","cominciato","commerciali","compagno","compleanno","compreso","confini","convinto","costituzionale","divisione","economiche","economici","filo","gia","immaginare","imparato","indipendente","indirizzo","mattino","mediante","michele","minaccia","mm","necessaria","network","notevole","partite","partner","pasta","peggiore","penale","profondo","quest'ultimo","rimasta","sanità","talmente","tavola","terremoto","trasmissione","turismo","ulteriore","verona","vie","alternativa","ambito","ampio","associazioni","attacchi","cancro","candidato","casino","cattolica","collezione","comprendere","considerata","consumo","dall'altra","day","difendere","dignità","dimenticato","dimostra","diventata","eccezione","esperti","felici","finestra","finta","fotografia","fretta","frutto","genio","gioca","ideale","iniziale","latina","man","mandare","mobile","mondiali","my","nemici","nuovamente","obbligo","organi","orientale","pensione","perde","permettere","porti","possesso","potevano","potranno","produrre","raccolto","racconti","reti","richiesto","riduzione","saputo","scorsa","seguendo","soccorso","stefano","suono","troviamo","ue","unito","vendere","vescovo","vivono","zio","anime","annuncio","aspettando","bari","cadere","chiedono","cinesi","cit","copia","dovuta","eletto","esse","fatica","fondamentali","fortemente","frega","indagine","james","laboratorio","mettono","monti","paul","paziente","pazienti","pensate","peter","piattaforma","prendo","probabile","proposto","prossimi","quota","recenti","registrazione","regolare","roberto","romana","sapeva","seriamente","superare","televisione","totalmente","up","varietà","viaggi","afferma","alberi","argento","batteria","birra","chiamano","chiusa","componenti","crimine","cristiani","dimenticare","diventando","edifici","elettrica","en","evoluzione","fantastico","giocato","giuro","incontrare","indica","legati","liceo","logica","matteo","offrire","opposizione","patria","pc","proteggere","ricchi","rifiuti","ripresa","scientifica","scritti","stavano","stretto","svolta","torre","vice","weekend","andati","capi","cerchi","citato","cominciare","comprato","comprende","conclusione","correre","decide","dell'uomo","denuncia","differenze","dovete","dovranno","esercizio","esterno","falso","farla","fi","indagini","industria","inglesi","interessanti","interventi","jack","lasciando","località","lorenzo","lunghi","manco","merita","muore","neppure","noti","nè","open","parma","pioggia","portano","prendendo","presi","razza","regionali","regista","riescono","riso","rivolta","romani","salire","sposa","tedeschi","tenuta","tom","valutazione","adoro","agente","all'università","angolo","averlo","braccia","condanna","contento","controlli","crea","denti","dibattito","dirlo","effettivamente","entrato","fascia","federico","fermare","gradi","guardate","introduzione","invito","lavorando","lombardia","naso","ospiti","percentuale","piatto","pratiche","prendono","procedura","professionale","rabbia","record","relativamente","relativo","resa","riserva","scientifico","set","sostanza","squadre","stella","stima","studente","tiro","titolare","uffici","vacanze","venivano","vol","aggiornamento","ampia","assunto","atteggiamento","avevamo","battuta","big","brescia","carino","chiedendo","city","colpi","comandante","decenni","definito","edificio","efficace","elenco","etc","europee","fattori","george","gesto","incontrato","individui","iniziative","inverno","inviato","lancio","milione","mosca","nell","nick","op","parenti","passando","passata","propaganda","raccontare","registrato","riceve","riconoscere","riconosciuto","sara","scrittura","segreti","semi","siccome","spazi","spiegato","stamattina","strategia","tecnologie","tende","accusa","aggiunta","alberto","appartiene","basi","black","calabria","canali","classica","comunista","considera","contatti","contratti","costruito","curiosità","decisioni","dialogo","dr","emozioni","enti","esami","fallimento","familiare","famosa","farebbe","fiscale","franco","gatto","giallo","impatto","interessato","investimenti","israele","mettendo","navi","pene","preparazione","sbaglio","socio","solidarietà","spedizione","statale","velocemente","vere","vestito","world","albero","all'epoca","approccio","assoluta","avrai","banda","bandiera","brava","cammino","catena","coda","comma","condotta","condotto","conversazione","critiche","critico","cronaca","deputati","esperto","esprimere","essersi","firmato","giovedì","governatore","impressione","intelligente","kg","larga","leone","lol","louis","lunghezza","lupo","maglia","mar","messico","occupazione","oscar","palla","park","personalmente","pesante","pisa","presentare","prestito","prospettiva","rapidamente","rappresentanti","realmente","recentemente","riesci","riferisce","rio","ritiene","rock","scendere","sembrare","sostiene","statistiche","traccia","troppi","uova","usano","venuta","vigore","votato","accade","accedere","accordi","adulti","agire","alte","approvato","assai","assumere","carabinieri","cattivo","complimenti","condannato","conosci","continuano","dell'italia","democratico","dichiarazioni","duca","enrico","esseri","fabbrica","familiari","felicità","frasi","garanzia","girare","governi","guerre","insegnante","intendo","isole","leggermente","letteralmente","manager","ministri","moderno","negozi","nonno","origini","pausa","piangere","pianta","preciso","provo","raccogliere","razzismo","ricorso","ringrazio","riportato","saremo","seduta","siria","street","superato","tantissimo","tensione","terribile","togliere","trattati","trovata","truppe","usati","vergogna","abito","altrove","annunciato","belli","biglietti","boh","bomba","cantante","cari","cassa","categorie","coppie","credi","debole","deriva","ebrei","email","filippo","giornate","interamente","international","laura","lazio","los","madrid","mappa","meridionale","nati","necessarie","oriente","paradiso","piú","poeta","popolari","pre","private","provinciale","religiosa","religioso","resti","ricetta","rumore","scomparsa","segnale","seria","tempio","tracce","abbandonato","alimentare","altrettanto","apple","arresto","assemblea","attore","attori","avvenuto","buio","business","capisci","capita","catania","colonna","confermato","connessione","consiste","contributi","corretto","corruzione","credono","definire","dell'acqua","determinato","dirti","doppia","entrate","esecuzione","eventuali","farei","formula","globale","harry","impiego","indicare","lascio","licenza","maggiormente","marcia","maschile","okay","organizzare","out","ovest","parlamentari","patto","perfino","piaciuto","pista","preferisco","premi","privacy","residenza","ricostruzione","rimangono","scene","schermo","seguono","settori","sonno","sorriso","staff","statunitense","torno","trasporti","vederlo","vittorio","aggiunge","ancor","android","attuali","benvenuto","berlino","bloccato","bosco","calma","candidati","chiamate","ciascuno","circolare","classi","conoscenze","considerando","contare","corriere","cristiano","cure","dell'unione","des","dieta","difficili","disegni","dite","eliminare","esteri","estrema","famosi","fumo","galleria","giudici","guidare","impianti","india","indicato","integrazione","interpretazione","italy","lettori","mangiato","manifestazioni","minima","modena","moneta","mossa","mostrare","negativo","occasioni","occhiata","orario","pericoloso","plastica","pone","popoli","portale","puro","pò","quarta","ricca","rimasti","rom","solitamente","spiegazione","successivi","talvolta","testimonianza","tetto","tornata","turchia","utilizzata","verdi","washington","accettato","antichi","anziani","aperti","architettura","audio","autobus","avventura","bonus","ca","cambiamenti","cc","composizione","composta","contemporanea","continui","criminale","cristiana","dall'inizio","decine","dell'esercito","design","diffusa","dimensione","distrutto","dita","dito","diversamente","doccia","egitto","elettori","esigenze","esser","evidentemente","facevano","feste","fiera","gloria","grazia","indipendenza","inizi","inizialmente","insegnanti","lavorano","legame","leggo","lettore","love","materie","metro","necessari","neve","nomina","normali","offerto","ordinato","perdono","porre","possiede","povera","profonda","pura","rappresentano","rappresentante","ricordato","risoluzione","riunione","riusciti","rivela","selezione","sforzo","sicuri","somma","talento","tecnici","tipico","tradizionali","tragedia","tranquilla","trovate","utilizzati","vergine","verifica","visitare","zucchero","amato","ambientale","ansia","arrivi","cattiva","cesare","cifra","commesso","competenze","contrasto","coppa","cresciuto","dica","diffuso","discorsi","diventano","dolci","grillo","impedire","impianto","incarico","mangia","maschi","maschio","nominato","occorre","organizzata","organizzazioni","polvere","portando","positiva","potenziale","potremmo","probabilità","promuovere","protagonisti","restano","ricchezza","ridotto","riguardanti","russa","sappia","sarai","sessione","sfondo","studiato","terapia","tono","trasferimento","trieste","trovava","trump","uguali","ultimamente","usi","utilizzando","vedremo","venduto","virus","accaduto","an","ascolta","autonomia","cardinale","certezza","chimica","cima","civiltà","claudio","competenza","compiti","consegna","consente","controllato","culto","dichiara","disastro","disoccupazione","disposto","dodici","dottore","eri","fantastica","farne","giudicare","illegale","indice","largo","lunghe","martedì","mercati","necessariamente","nipote","ospite","parecchio","pazienza","periodi","poca","presidenza","produce","professione","professionisti","programmazione","rappresentato","recuperare","rendono","responsabili","rispettare","salto","sexy","singola","sostanze","suolo","umanità","universale","usate","vecchie","vengano","volere","affitto","alex","all'anno","aperte","argentina","assurdo","basato","calore","cd","cerimonia","chiedi","comodo","comporta","costituito","dall'altro","disciplina","fattore","federale","ferrari","finanza","formare","frank","han","infanzia","luci","mafia","marino","mentale","mike","mostrato","na","occupato","padrone","parlamentare","peraltro","potrai","preparare","presentano","promessa","promesso","pubblicati","quest'ultima","reggio","revisione","rose","scherzo","scritte","sentimento","server","sinceramente","smesso","specchio","specifica","st","stabile","stabilire","stabilito","stupido","successiva","suona","svolto","tedesca","tim","tradizioni","turisti","unici","vantaggi","vetro","violazione","volevano","allarme","approvazione","arrivando","avvenuta","benedetto","canada","caratteri","cavalli","circolazione","circostanze","cittadina","cognome","concorrenza","conosciuta","consapevolezza","consigliere","conviene","definitiva","dell'arte","dell'articolo","descritto","diavolo","disagio","distruzione","dottor","emilia","fantasia","free","generazioni","individuale","istituzione","lati","leggendo","mancato","manda","mercoledì","meta","mo","olimpiadi","pero","presentata","prevista","procuratore","profondamente","raggi","raggiunge","red","rifiuto","riflessione","riforme","santi","scontro","scrittori","sentirsi","solare","sospetto","spada","strana","territori","this","unite","vennero","affinché","ammettere","anticipo","ascolto","autorizzazione","bacio","ballo","bruno","campagne","coinvolto","collegio","comunicare","comunicato","concerti","conservazione","costantemente","costituisce","criminali","desideri","dettaglio","elena","evidenza","fascista","fiore","fondata","fornisce","ghiaccio","gira","henry","immigrazione","lady","legata","magia","mettersi","mistero","nucleare","opzione","piatti","piemonte","proprietari","protesta","province","qualora","quinto","real","reati","recupero","ridicolo","riporta","riposo","riprese","robert","saggio","salva","sconfitta","seno","smartphone","stavolta","straniero","straordinario","suicidio","tentato","testimoni","torta","trasformazione","umane","vengo","viaggiare","vorresti","wow","acquistare","aiutato","all'altro","all'ultimo","ammesso","anello","annuale","attento","aumenta","avremmo","benefici","benessere","bergamo","brevi","cavolo","cazzate","celebre","chiamati","chiude","cifre","colpevole","compresa","comunicazioni","concessione","considerati","corona","criteri","daniel","diretti","eroe","esposizione","extra","fidanzata","fondato","fornito","frequenza","frutta","giacomo","guadagnare","guardi","guardo","insegna","iscrizione","lancia","lasciano","legali","legate","liberazione","libia","limitato","medie","mediterraneo","meraviglioso","miglioramento","motori","mura","nascosto","normalmente","parecchi","passano","pesanti","poste","precedenza","premier","preparato","priorità","produttori","provvedimento","rappresentare","realizzata","robot","rotta","russi","salvatore","sapore","saprei","scappare","scheda","schiena","servire","sessuali","soci","stipendio","tappa","tengo","tolto","trattare","ulteriormente","vabbè","val","van","venisse","abilità","affetto","amiche","avvocati","barca","basata","bei","bravi","campioni","capaci","circolo","compagnie","costume","distruggere","dono","dovevo","elevato","equilibrio","fastidio","fedeli","finanziaria","giovanile","giri","go","gratuito","impiegato","insegnato","mark","mobili","modifiche","omaggio","or","palestra","parete","pieni","poliziotti","povertà","professionista","pubblicare","puntate","quanta","radici","registro","regolarmente","rifugio","ritratto","sacro","salvato","sciopero","senatore","stomaco","sveglia","sviluppare","sviluppato","svolge","unita","uscite","abbandonare","accuse","amare","appoggio","archivio","asia","avrò","bus","calda","center","chiamo","collegamento","commissario","compresi","confusione","copertina","cresce","destinato","destro","dirigente","du","entità","esprime","essenziale","esterni","ferito","fissa","fisso","foglie","grossa","impero","incluso","incontra","iniziata","intelligenza","inviare","joe","medica","messe","nobile","parlava","passate","peggiori","pesca","pop","potevo","prestazioni","produttore","puglia","raccontato","rappresentazione","redazione","risparmio","rispettivamente","ritiro","rompere","scrivo","siena","sintesi","sopravvivere","spiace","stop","stress","tagli","taglia","tette","tieni","troppe","universo","valutare","vincenzo","viola","volontari","vs","with","accoglienza","affermazione","agricoltura","alternative","austria","barcellona","battute","cade","caratteristica","charles","chiusi","college","com","conoscono","conquista","dirigenti","discussioni","disposizioni","dov'è","dovevano","emma","eventuale","faremo","fargli","fasi","flusso","giulia","impiegati","inchiesta","iniziano","innovazione","inserito","interessati","intitolato","lee","lentamente","leonardo","manuale","mira","montagne","operatori","opposto","originali","permettono","petto","popolazioni","posteriore","precisa","preghiera","procedere","raccolte","religiosi","sbagliata","scarsa","sentono","single","soldato","sorelle","straordinaria","tenendo","tessuto","treni","trenta","vasta","vendetta","verificare","vicende","windows","xvi","accetta","altrui","amante","ami","anziché","appartenenti","artistico","assicurazione","australia","averne","boschi","camminare","carità","catalogo","cellule","conclude","dar","deserto","dia","diede","dimostrazione","dipendente","disturbo","edizioni","elettronica","fallito","farmaci","fondatore","foresta","funzionare","guido","impegnato","incendio","infrastrutture","instagram","intento","intervenire","inutili","iphone","iscritti","lacrime","lanciato","leggera","lusso","marchio","marketing","meccanismo","messina","operai","orgoglio","panico","pareti","perdendo","positivi","pressi","principessa","pubblicazioni","raramente","religiose","residenti","rilievo","scolastico","sconto","soddisfazione","sospensione","sostenuto","streaming","suonare","terrorismo","terzi","tira","tuttora","vaticano","vincitore","virtù","visite","aerei","alba","ambienti","angeli","antiche","armata","armate","attaccato","attivi","auguri","avevi","cagliari","carina","centrali","chiuse","comportamenti","concesso","creduto","danza","die","divieto","domenico","editore","erba","estratto","facciano","federazione","fenomeni","fermato","fidanzato","finanziario","gamba","gare","giapponesi","giocando","glielo","grossi","home","house","industriali","intellettuale","ispirazione","leggenda","line","mary","monete","ombra","onde","ove","permanente","persa","potenti","prato","richard","riflettere","ritorna","scadenza","scale","sig","situato","sostituzione","specifiche","sperare","stando","steve","tentativi","teste","trento","trono","vedrai","volentieri","volesse","abiti","amministrativa","andrebbe","applicazioni","assistente","assume","at","avremo","baby","calendario","cantare","cioccolato","clinica","colonnello","componente","comprensione","concetti","convegno","costretti","crimini","culture","deposito","diamo","diario","dimissioni","dipendenza","dirmi","documentazione","eccellenza","ehi","elezione","enormi","esistenti","ferite","fermata","ferrara","figo","finestre","food","frequenti","frutti","giulio","gola","grasso","green","idiota","imperatore","informatica","intesa","investimento","istituti","lasciate","lontana","lontani","marche","martin","maschera","mettiamo","min","minoranza","miss","mito","monaco","mr","musicali","nicola","nozze","organo","palco","parcheggio","pilota","pistola","profondità","prossime","quindici","raccolti","rapida","rassegna","regia","riconosce","riguardano","ripeto","rischia","scandalo","scopri","scrivendo","scrivi","scuse","settentrionale","sforzi","sky","sofferenza","status","successive","svezia","trama","uccide","us","valido","venendo","versi","zia","accompagnato","aggiungo","arco","ascolti","avresti","banco","bando","calcolo","causato","commedia","competizione","consapevole","continuamente","controlla","convenzione","convincere","corea","creata","curva","definitivamente","dell'isola","deputato","destinazione","divano","documentario","dotato","fama","fascismo","favorevole","feriti","foglio","folla","furto","gatti","grano","insegnare","interne","invitato","kim","labbra","leggero","legislativo","libreria","like","limitata","mancata","medaglia","nascondere","normativa","odore","orecchie","partendo","parto","pensiamo","perugia","pesci","pittura","poliziotto","portogallo","professori","promesse","provvedimenti","raggio","respiro","risolto","ritmo","saltare","scaricare","segnato","seguita","sinistro","sms","sostituire","spagnola","sparare","speranze","spinta","stabilità","statua","storiche","strettamente","tagliare","temo","tendenze","terreni","thomas","tirare","tony","varia","adatto","apparentemente","applicare","assicurare","attaccare","averla","benzina","bill","bottiglia","campania","cavaliere","certificato","cita","compiuto","conosciuti","coperto","corretta","creando","darti","deboli","dell'altro","dell'economia","ente","esclusiva","falsa","farle","fermi","figlie","fredda","fumetti","girato","hashtag","improvvisamente","istruzioni","les","manifesto","manutenzione","master","meriti","occhiali","off","orari","osservare","osservazione","pagano","partecipa","party","parziale","pazzo","performance","polemica","prescindere","requisiti","ricette","riprendere","ritenuto","ritornare","rosse","scatola","schema","sesto","soggiorno","sportivo","sposato","stretta","svolgere","temporale","troppa","trovati","uccisi","utilizza","vent'anni","vincitori","visibile","viviamo","accusato","acido","acquistato","aeroporto","angeles","artistica","asilo","basa","bensì","buco","caos","cerchiamo","charlie","compiere","concluso","conseguente","corrispondente","darsi","debiti","dell'opera","digitali","divisa","doc","docenti","eco","entrano","entusiasmo","eroi","espansione","esterna","fedele","festeggiare","follia","giunto","grafica","greci","gusti","introdotto","lasciati","life","miracolo","moderni","monumento","mostrano","muri","musei","nudo","occidentali","offrono","ossa","percezione","perdite","piacevole","pietre","pio","prete","prigionieri","procedure","progresso","prosegue","reparto","riccardo","riva","rivolto","rottura","sano","saper","scegli","schiavi","stupida","teorie","tomba","tristezza","volumi","walter","we","accademia","aggiornamenti","alleanza","alleati","amministratore","ampiamente","atmosfera","bici","borgo","calo","cancellare","cattolici","ciascuna","classici","colui","coprire","decennio","depressione","der","differente","dimmi","dirò","dramma","duomo","end","false","farli","favorire","femminili","fiamme","finchè","greca","indicazioni","individuo","indossare","insulti","intendi","intenzioni","liberamente","malato","merci","miglia","milanese","mostro","motivazione","netto","nucleo","orientamento","ottiene","passeggeri","pavimento","poesie","portati","precedentemente","promosso","proporre","quinta","raccoglie","reazioni","ridotta","riportare","ripreso","ruota","sam","sanzioni","sensibilità","sindacati","sintomi","socialista","sorveglianza","sostanzialmente","splendida","stanco","sti","taxi","torto","university","venuti","viste","acciaio","adolescenti","adottato","affermato","alice","allenamento","amano","andò","anniversario","aspettavo","assegnato","camere","citazione","colpisce","crescente","cugino","definisce","dell'europa","dell'istituto","disponibilità","ditta","divertimento","eccezionale","editoriale","eseguire","esercizi","esistere","estensione","fabio","facevo","febbre","fresco","fuggire","funzionamento","generi","guai","guardie","impegni","imprenditori","include","indipendenti","info","insegnamento","lavoratore","liste","lucia","malati","malgrado","maurizio","metropolitana","mini","negativa","nell'area","obama","occidente","omicidi","panorama","pil","pratico","precisione","prevenzione","privo","procedimento","procura","profili","proveniente","pulizia","que","radicale","ripetere","salerno","sana","sanitario","scorta","scrisse","simone","sondaggio","sottile","spalla","spinto","stanotte","supera","tipica","toccare","toni","trasparenza","trucco","veicoli","versioni","vide","xi","abitudine","alimentari","allenatore","auguro","bibbia","cancellato","chitarra","chris","codici","color","console","corre","costituiscono","costituita","curare","dante","definita","descrive","destinati","determinare","determinazione","dir","dispositivo","facesse","fallo","fortunato","gazzetta","gianni","giornalismo","guardato","guidato","ignoranza","inter","iscritto","leva","logo","meravigliosa","milan","mix","modifica","muove","nell'ultimo","pienamente","piero","pietà","polonia","prendersi","previste","profumo","project","psicologia","qualcun","richiedere","riferito","rilasciato","rilevante","rinunciare","riproduzione","ristoranti","romagna","rubare","rubato","ruoli","sabbia","scenario","scopi","sentita","sfera","sospeso","specifici","ss","stagioni","statistica","straniere","studiosi","succedendo","tabella","tasca","tempesta","testimone","testimonianze","tommaso","trattava","uccelli","valida","vasto","vedendo","vedete","veicolo","veste","vienna","vii","adozione","aggiornato","altamente","amor","apparire","armati","armato","arriverà","aspettano","aspettative","aspettiamo","aula","avvenimenti","barba","belgio","bisogni","bob","buonanotte","cambiano","cavo","ch","chiavi","ciascun","cinquanta","collegato","como","compagna","complicato","conosciamo","continuato","copie","coro","corto","dargli","darà","descrivere","difetti","diventi","dott","effettuare","efficacia","elettorali","eredità","esserlo","formaggio","fotografie","grafico","imposta","inferiori","informato","innanzitutto","ironia","iva","juan","legislazione","leo","liberale","lord","metallo","mezz'ora","miseria","modificare","motivazioni","musulmani","negare","operativo","parità","pensioni","perfezione","petrolio","piscina","play","polo","portate","preferisce","prevalentemente","quotidiana","rapido","razzista","resistere","retta","sapendo","sergio","servito","sezioni","silvio","soffrire","spendere","spot","stazioni","sveglio","televisivo","tengono","terrore","tirato","trasmesso","tè","vietato","volare","xii","xx","albergo","anteriore","as","autunno","avvicina","barbara","beneficio","bicchiere","brano","bruxelles","cattivi","cattolico","comunali","concreto","condiviso","condurre","coperta","corrisponde","costumi","crema","critici","custodia","delegato","dell'area","dev'essere","dialetto","dipinto","divenne","diventati","dovuti","elementari","farvi","fiumi","fontana","forno","francesca","from","gioventù","grigio","hey","imposte","imprenditore","ingegneria","innamorato","king","lasci","lucca","match","neo","offesa","paesaggio","pantaloni","porterà","previsti","pugno","pulito","rappresentanza","recensioni","report","ricordano","riferimenti","salve","sedia","segna","separazione","significativo","spirituale","statuto","sè","tentare","toccato","tradotto","trend","urbano","veda","vicine","videogiochi","virginia","acquisti","automatico","avversari","azzurro","battista","best","bianche","bloccare","bombe","caduto","california","cappella","carlos","chiediamo","circuito","compare","complessa","consumatori","contadini","continente","contribuito","correnti","cover","crediamo","dell'ambiente","dell'azienda","democratica","difensore","diploma","divina","docente","dose","eccellente","elevata","emanuele","esistente","eventualmente","femmina","fiat","finanziamento","giustamente","https","ingegnere","investire","lasciamo","league","men","mezzanotte","mezzogiorno","minacce","mussolini","national","navigazione","nn","not","notti","operare","pittore","polemiche","precisamente","preparati","rimase","rivedere","sanitaria","scherzi","scopre","sentite","sfruttare","simpatico","soddisfare","soddisfatto","solita","sub","tifosi","trasferito","vicenza","virtuale","visitatori","william","affermare","agenzie","andranno","annuncia","arabi","attrice","automaticamente","avanzata","benché","cambi","cappello","coalizione","coinvolti","comunisti","consentito","considerate","consulente","cooperazione","corrispondenza","curioso","davide","dell'amore","disposti","elegante","elementare","essenzialmente","etica","farai","ferita","finanziamenti","finiti","fusione","future","gigante","giuste","golfo","immediato","inferno","inserire","ispirato","kevin","meccanica","mestiere","modificato","morì","nascere","padri","penna","potessero","professor","profitto","profughi","punizione","quadri","quote","ragazzino","realizzati","recensione","regali","registrare","ricordate","rigore","rilascio","riviste","sacrificio","saluto","salvezza","scende","scrivono","seminario","sentiamo","sentivo","singole","soglia","sorpreso","spazzatura","sportiva","stanze","statali","stradale","stronzate","suoni","that","timore","tokyo","tornando","tribù","troverai","uniche","universitario","vendite","visibilità","wikipedia","will","your","accademico","adottare","alimentazione","ambientali","amministrativo","appartenenza","appartengono","bacino","basse","boy","brillante","bronzo","can","champions","chiami","collettivo","combinazione","cominciò","community","conduce","contenta","cosiddetta","coste","costruita","cucinare","cv","database","destinata","dicevo","dirette","dispositivi","divorzio","donato","dritto","ebbero","elettrico","eseguito","facili","falsi","fammi","fisiche","futura","girl","godere","idioti","impegnati","incidenti","incremento","invita","jean","lanciare","legami","libere","liquido","livorno","mac","maio","mancare","margine","meraviglia","moltissimo","monumenti","muoversi","negativi","orologio","osserva","parlarne","pollo","primarie","pubblicate","putin","quartieri","retorica","ri","ricercatori","richiedono","risale","riservato","ritrovato","saperlo","scarica","scienziati","sconosciuto","scontri","scusami","seduto","segnali","sembri","settimanale","simon","sopportare","sorge","sottolineare","sovrano","spetta","spettatori","stiano","succedere","sull","taylor","tenuti","territoriale","toglie","tonnellate","torni","trasformare","trasformato","utilizzate","xiii","xv","abbandono","amazon","americane","are","atene","bis","borse","carbone","chiarezza","colonia","concordo","confermare","contano","contribuire","credevo","crediti","curato","delitto","dicevano","diego","dna","eletti","esci","esperimento","esposto","folle","galera","gelato","ginocchio","identificare","imbarazzante","incinta","inclusi","indispensabile","individuali","invasione","inventato","island","lasciata","lento","mise","morendo","mostri","nere","nervoso","operato","opzioni","orribile","ospedali","over","pa","parzialmente","passeggiata","pasto","pazzi","pericolosa","piene","postato","prospettive","pulita","raro","ricordati","ricordiamo","rientra","rispondi","ritengo","ruote","scott","secco","siate","sindacato","sorte","sovranità","spettacoli","ste","svolgimento","tantissimi","tenta","tubo","tumore","ucraina","undici","uni","vescovi","voli","volti","vorrà","accolto","alessandria","all'improvviso","amanti","ambasciatore","angela","aquila","arabo","assistere","budget","cassazione","cerchio","cmq","colloquio","colpire","commissioni","compra","concludere","condivisione","consentire","convinzione","corti","dell'autore","dell'interno","desidera","diagnosi","diventerà","diversità","diviso","esecutivo","finanziari","formale","futuri","gamma","gestito","gravità","guardano","hitler","immediata","immobili","immobiliare","jim","ladri","letterario","limitare","lire","magico","magistratura","more","ospita","ottimi","pancia","paris","pianto","preferiti","prezioso","professionali","ramo","ray","ribelli","rifiuta","rifiutato","righe","rimuovere","risparmiare","rovina","sacra","salta","sanremo","sarah","scientifiche","segnalare","seri","simboli","sincero","soliti","sopratutto","sostenibile","sostituito","spagnoli","sperando","straniera","strategie","successi","taranto","tassa","tastiera","tenente","teresa","tradimento","tramonto","urla","veloci","vota","west","whatsapp","xiv","affascinante","andarsene","apprezzato","ascoltato","attendere","avrete","aziendale","ballare","battere","boom","camicia","capite","cariche","collaboratori","concentrazione","costretta","dall'alto","dedica","dimostrano","dintorni","dirà","distrutta","escono","esito","esponenti","estero","firmare","formazioni","funzionale","giacca","giurisprudenza","gomma","group","impara","intellettuali","ix","ladro","mali","manovra","medesimo","misto","multa","nobili","occupati","pacchetto","password","patate","pavia","piaccia","piaceva","politicamente","ponti","preferita","prendiamo","progressi","provi","registrati","retro","richiamo","riconosciuta","rispondo","risultano","rito","rivelato","sfruttamento","singolare","soffre","sopravvivenza","spera","stupidi","stupro","successione","supremo","tag","televisiva","tematiche","torneo","turco","ungheria","universitari","velo","vende","viale","violento","vitale","white","aiutano","applicata","battaglie","bretagna","brutte","caratterizzato","catene","cella","cellulari","censura","chef","chiare","citazioni","colonne","compenso","complessi","comunemente","concezione","continuità","cortile","cosiddetto","costruzioni","cristina","cuori","daniele","debbano","dedicati","dell'ufficio","dell'umanità","difficilmente","dvd","effettuato","espressioni","fantasma","fb","fecero","fegato","femmine","finiscono","fiorentina","fiscali","flash","fresca","fumare","giustificare","guidata","hot","ideali","impegnata","indiano","individuare","integrale","josé","liguria","mantova","margherita","merce","meritano","mobilità","molteplici","musicisti","onestamente","operaio","operatore","ostacoli","pacifico","paola","passaggi","pensava","petizione","prepara","previsioni","proseguire","protocollo","reputazione","rese","rimini","rubrica","saggi","salita","saremmo","sceglie","sensibile","sondaggi","sovietica","spara","stipendi","tela","terroristi","tradurre","trascorso","turchi","udine","ugualmente","urgente","usciti","variazioni","venduti","villaggi","vini","vivendo","volendo","vorrebbero","abbigliamento","affare","all'altezza","all'esterno","alquanto","alzare","american","anonimo","appunti","atleti","camion","capitato","cartello","chiarire","comprese","conclusioni","contenente","contenere","creature","crollo","dan","dc","determinati","diminuzione","dispone","divide","dj","donazione","dovessi","droghe","eliminazione","esplosione","estremo","fabrizio","ferie","figurati","finali","fumetto","gerusalemme","giusti","grandezza","gravidanza","immobile","inclusa","incubo","inevitabile","innocenti","intelligenti","intensità","iscrizioni","lasciar","liberare","lottare","magnifico","mantiene","marca","martino","mauro","medioevo","mensile","menti","monastero","nasconde","panni","penisola","pensarci","perduto","power","preoccupa","prevenire","prodotta","pronuncia","religioni","rendendo","rientrare","rientro","romanzi","scomparso","scontato","sedi","seguo","smith","solitudine","spinge","stanca","striscia","sufficienti","suprema","tassi","tel","times","trasmettere","urbana","abitazioni","abuso","accadere","accogliere","adam","adulto","amministrative","ancona","andarci","andrò","annunci","archivi","assistito","assunzione","attenta","attenti","attuazione","avversario","basket","battuto","bestia","bicicletta","brani","burro","busta","candidatura","canna","canta","capolavoro","cartone","cemento","colle","combattimento","completato","conflitti","confuso","considerazioni","convinta","corse","darmi","dava","definitivo","dischi","dittatura","dizionario","escluso","esemplari","essenziali","faccenda","fiato","friuli","gestisce","grosse","guide","imbarazzo","industrie","iniziando","innocente","investito","istante","lana","las","lasciò","little","maestri","matrimoni","modulo","napoletano","orale","padroni","pag","pagati","patente","pe","piattaforme","portoghese","preoccupazione","prestazione","ragionevole","riesca","riflessioni","rimarrà","riprende","risarcimento","riserve","scoperte","segreteria","sensibili","serena","sii","situata","sospetti","sottoposto","speso","splendido","studia","subire","tagliato","teatrale","tendono","tornati","uccisa","unisce","uovo","utilità","vapore","vedrà","viceversa","vigili","volante","xix","acceso","adatta","addetti","agricola","apposta","approvata","bimbo","boss","box","calci","carnevale","cavalieri","chimiche","citta","coltello","consegnato","contattare","contempo","coordinamento","cresciuta","cristianesimo","datore","dea","dell'ultimo","determinata","dette","detti","diametro","difetto","distanze","distinguere","energie","entrati","entri","eric","esercitare","famose","fascino","fascisti","fisici","giovanna","giuria","gratuita","gratuitamente","guadagnato","implica","impone","imposto","interessata","interpretato","lama","legittimo","letta","maglietta","mantenuto","mentalità","microsoft","moderne","mosse","muscoli","nastro","nazionalità","obbligato","ognuna","palazzi","pasqua","pastore","peggior","pericolosi","periferia","pesi","preoccupato","press","prigioniero","quotidiani","rappresentata","resi","riassunto","ricorrere","riscaldamento","ritrova","roccia","rurale","saluti","sapienza","shock","sposare","strage","succederà","sull'isola","tennis","terminato","tessuti","testamento","tocco","tortura","traguardo","under","unicamente","variabile","abitazione","accento","air","alimenti","alunni","alza","animo","apprezzare","artificiale","autonomo","avermi","blocchi","book","cadavere","cambiando","canone","cattedrale","chirurgia","cimitero","clicca","collana","collettiva","colto","commentare","comparsa","competente","completare","concorrenti","conduttore","conquistare","contenti","conversione","convinti","corda","decise","deluso","democratici","digital","discesa","equivalente","eva","facciata","farina","fissato","formata","fotografo","genitore","giardini","giunti","gold","guadagno","hard","impedisce","imperiale","indicati","infinito","intenso","interviste","inteso","invitati","isolamento","istituzionale","jazz","jones","killer","kong","lecce","magazzino","marmo","marte","monza","nascono","onesto","opportuno","oramai","parecchie","pazza","pm","provenienza","ps","punteggio","recita","residente","rifugiati","risorsa","romeo","salone","scarso","scientifici","sedere","segreta","separati","sindrome","sofia","spiegazioni","sportivi","telecamere","temperature","trans","trasforma","trent'anni","trentino","trovarsi","uk","urlare","valentino","venditore","volontario","von","abitudini","abruzzo","act","africani","all'età","allievi","ammette","apertamente","appaiono","arresti","autorizzato","avvenire","bambine","bersaglio","britannico","cambiata","carro","chiari","cio","civico","comico","conferenze","contengono","cortesia","creano","disperazione","disturbi","dovrai","dovrò","dovute","esemplare","estrazione","eu","facilità","finto","francisco","frazione","frontiera","funzionano","game","gentili","giuridico","gode","grassi","ignorare","immagina","incapace","incontrano","inserita","intensa","introdurre","irlanda","italian","jackson","juventus","legittima","linguistica","logico","madri","mah","mantenimento","marcello","matt","maturità","meccanismi","mega","miele","monitoraggio","municipio","music","mutuo","obblighi","occupano","occupata","od","originariamente","originario","ospitare","osservazioni","part","pelo","portò","positive","previsione","priva","proteste","protetto","pulire","radice","razzisti","replica","ricevuta","rimborso","ringraziare","ritrovo","sacerdote","saint","schede","seppur","tecnicamente","tipici","tornano","treviso","tunnel","vangelo","vicinanze","what","abbraccio","alcol","alexander","all'articolo","alpi","altronde","am","amata","anelli","apri","ascoltando","assedio","associato","attacca","autonoma","bastano","batte","beneficenza","biscotti","bisognerebbe","bolla","brian","capitali","causare","chiacchiere","chiamava","citare","collaborare","commenta","compromesso","condannati","consiglieri","continuate","correttamente","creatura","degno","dell'impero","denunciato","determinate","diana","dichiarare","diffondere","divertenti","dolori","dominante","dottori","dottrina","dubito","ebbene","efficaci","eliminato","esclusione","esperimenti","esteso","evidenti","facce","firme","fortunatamente","funzionari","giudiziaria","ideologia","imporre","indagare","indiana","infinita","iran","isolato","italo","lavorazione","mangio","medicine","mentali","metta","moltissimi","obbligatorio","ottenuti","pdf","piacenza","plus","poichè","prestiti","primaria","progettazione","proviene","pubblicamente","rara","respirare","riduce","rilevanza","rischiare","salsa","samsung","saperne","scambi","scherzando","seguite","sentiero","sequestro","serva","sfuggire","sigarette","source","spostare","suggerisce","terrà","tornerà","truffa","tutelare","universitaria","utilizzano","valere","vedeva","venite","verbale","verticale","vinci","abbandonata","abusi","alcool","all'ospedale","anziano","applica","assalto","assurda","bagni","botte","brindisi","cantiere","card","casse","cast","cercate","circondato","coinvolgimento","collegati","colpita","conservare","consumi","creatività","criticare","dappertutto","dell'art","dell'attività","dell'utente","diffuse","esco","esista","esposti","estera","esterne","finanze","fisicamente","football","foreste","garibaldi","giocano","giudiziario","giunge","identificato","indiani","indicano","indicazione","iniziamo","innamorata","innumerevoli","invisibile","larry","malta","mancava","narrazione","notevoli","obbligatoria","occuparsi","olanda","opposta","ordinare","organizza","oscuro","palma","parallelo","parlate","passò","potevi","preda","presentati","puzza","ragionamento","ride","riga","riguardante","riportata","rocco","salutare","sapevano","sarete","scuro","senatori","sfide","slogan","sostengono","spia","sviluppi","telefoni","umberto","uniforme","vasca","vederla","vedova","vicepresidente","viii","visibili","week","xviii","accessibile","accorto","addetto","affrontato","applicato","armonia","augusto","avventure","casuale","celebrare","claudia","collina","compie","complessivo","conserva","continuando","contrastare","convento","coperte","criminalità","croazia","decidono","declino","dell'industria","dinamica","disabili","distante","divenuto","divinità","ennesima","erede","etichetta","favorevoli","filosofo","finanziarie","foggia","formati","frequentare","frequentato","geografica","governare","hong","horror","indossa","ingredienti","interpretare","legalità","letti","made","marine","meccanico","mediche","minor","muoiono","nido","notevolmente","organizzati","ossigeno","pagamenti","parametri","percorsi","portiere","porzione","postale","prestare","producono","produzioni","ragazzina","rami","ravenna","razionale","rendi","rimosso","scelti","scolastica","sconosciuti","segnalato","semplicità","serviva","sol","sostenitori","spingere","sportive","statunitensi","store","suggerimenti","sviluppa","torri","tranquillamente","trovò","victor","violenta","visitato","viveva","affidato","aggressione","aldo","amministratori","andamento","andrew","aspettato","assicurato","autostrada","babbo","benvenuti","blue","borghese","bugie","caduti","cagare","calciatore","capiscono","capitoli","centesimi","chicago","code","coerenza","colombo","cominciano","congratulazioni","conquistato","consigliato","consulenza","contea","creati","crudele","danimarca","dell'ex","delusione","dipinti","discriminazione","distinzione","dolcezza","eccesso","edilizia","editrice","ella","emozione","estesa","eterno","farcela","ferdinando","first","formano","frequente","garantisce","garantito","geniale","geografia","identificazione","incaricato","invio","islam","junior","lavorava","lenta","macchia","magica","maiale","mandati","manifesta","marchese","medievale","missioni","nacque","narrativa","nate","noia","nonni","omosessuali","ostacolo","pacco","pallone","pericoli","pochissimo","portafoglio","potessi","potrò","prenda","provocare","redditi","regalato","registri","ricostruire","rilevanti","rimozione","rinuncia","riportati","sanitari","scappa","segui","sembrerebbe","serra","silvia","simpatia","sindaci","sir","sottolinea","sparato","spaziale","sperimentale","spettacolare","stand","strato","stretti","succo","supermercato","svariati","tacere","testata","udienza","urgenza","valuta","verrebbe","vertice","viaggiatori","vigilia","abbiate","aborto","accetto","action","affermazioni","aggiungendo","alfonso","all'uso","amministrazioni","ammissione","analizzare","andavano","appassionato","attirare","attraversare","attualità","basilica","batterie","bottiglie","canti","catturato","cia","combattuto","complessità","complice","copre","credete","credeva","cuba","debolezza","dell'aria","discipline","disney","dovette","efficiente","estende","estetica","fabbriche","fango","favola","ferrovie","fibra","fidati","filmato","finirà","funghi","funzionato","gabriele","giordano","giuliano","incredibilmente","indicata","infinite","insetti","interessano","isis","kit","larghezza","laureato","legalmente","letteraria","liberali","lotte","luke","lupi","magazine","mamme","mando","marchi","margini","masse","memorie","morgan","moro","mortale","muovere","nazisti","nell'anno","nell'articolo","nuda","onesti","orlando","ottime","peli","persi","pescara","pessima","piazze","pochino","portava","potenziali","potremo","prendete","prescrizione","progettato","promossa","provando","provano","psicologico","realizza","realizzate","risate","ritrovare","riuniti","riusciamo","riuscite","riuscì","scarico","sci","secondaria","segnalazione","sequenza","significativa","sosta","stabilimento","tappe","tav","tipologia","toro","transizione","tutt'altro","valgono","verificato","wifi","xvii","adesione","anonima","anteprima","appartamenti","approfondire","architetto","arrivate","assassini","assassino","asse","associati","attentato","aumentato","avvio","benjamin","bimbi","bolzano","boston","brown","buttare","buttato","capodanno","cazzata","cedere","centinaio","chili","citati","coca","cogliere","collegamenti","coltivazione","conoscevo","contesti","continuazione","continue","crescendo","denunciare","dinamiche","diocesi","disperato","dovessero","down","duri","dì","eccezioni","emerge","eterna","farmaco","fasce","flotta","fotografica","full","funerale","gaetano","generare","giu","grandissimo","grida","guadagna","idem","informatico","inquinamento","intendere","intitolata","ip","jeans","johnny","laboratori","lenti","libretto","limita","litri","luis","lutto","medesima","meteo","minerali","miracoli","misericordia","monica","ms","musicista","napoleone","nazista","occupare","orgoglioso","panchina","parente","pasquale","pianificazione","popolarità","pozzo","pressioni","provoca","puntare","quotidianamente","raccontano","radicali","raffaele","ragazzini","rare","rimaste","riportate","riuscirà","scorsi","sennò","service","sete","siciliano","sofferto","sparire","spiagge","spiego","sponsor","sposi","storicamente","story","strani","svolte","tantissime","targa","tenda","terme","traduzioni","trasparente","tribunali","vario","verbo","vietnam","vittorie","vuota","accompagna","accompagnata","adeguata","agio","ala","alan","altresì","andy","appuntamenti","assente","assicurazioni","attentamente","atteso","averci","back","balcone","bruciare","call","carburante","castelli","cat","cattura","click","clinton","condivido","consegnare","corridoio","cosí","crescono","criterio","decisivo","dedicate","delegazione","dell'epoca","direttiva","disoccupati","editori","esplicitamente","feci","genera","gesti","gliene","guglielmo","infantile","informa","informatici","inno","intendevo","intraprendere","iraq","maratona","mari","mogli","monaci","municipale","nebbia","odia","ong","organismo","pan","paragone","partono","passaporto","pi","povere","preferisci","pregiudizi","prevedere","problematiche","provate","puramente","qualifica","quaranta","restauro","ricci","riempire","rimedio","rinnovo","riscatto","risparmi","risultare","rita","rt","sacrifici","sali","satira","sbagli","sbagliate","seguaci","sorprende","spessore","spina","sporco","stabilisce","strane","sull'argomento","televisivi","tipicamente","tranquilli","trovavano","vadano","varese","variabili","vaso","vederti","violenti","vivente","abolizione","achille","acquisito","adolescente","aerea","affronta","alfredo","all'ordine","apprezzo","arrestare","asta","aumenti","avviato","billy","bo","browser","cap","care","carichi","caterina","cattive","cavi","cercava","china","cibi","cieco","coincidenza","colline","composti","concorsi","consorzio","contraria","conversazioni","core","crederci","dell'evento","derivanti","descritta","difende","diminuire","direbbe","eccetto","edward","efficienza","emissioni","enzo","estinzione","estremi","europe","fatemi","fattura","fermarsi","fido","filtro","finalità","frigo","fucile","fuochi","garage","gemelli","generico","good","grand","grandissima","grido","i'm","id","improbabile","inevitabilmente","iniziali","insulto","isolati","joseph","lamenta","look","marocco","mela","metterci","mettermi","nascosta","negative","nobel","notaio","olandese","onesta","originaria","osservato","pablo","paragrafo","pellicola","perdi","permettendo","pessimo","posa","preferenze","preparando","primario","privilegi","procede","provocato","queen","rame","rari","rendersi","restituire","ricevono","rispettivi","ristrutturazione","riunioni","rocca","saggezza","scatole","sensazioni","servi","settimo","sollievo","sonora","sorgente","spieghi","sposata","superficiale","tariffe","termina","terrestre","trailer","uccello","uccise","umidità","und","urbani","varianti","zitto","abbonamento","acquista","adeguato","affidabile","agenda","aggiungi","all'altra","all'ingresso","amicizie","aprono","assicuro","atteggiamenti","attive","aumentano","basti","bellissimi","bloccata","brasiliano","brutti","buonasera","cambierà","caratterizzata","caricare","carl","catturare","celeste","centimetri","cessione","complicata","confessione","connessi","conservato","continuiamo","contrari","controversie","costituire","curriculum","dapprima","definiti","dell'esistenza","dell'ospedale","dell'unità","denominazione","discusso","divisioni","dorme","dormito","dotata","download","eccessivo","elizabeth","esclusi","esclusivo","fedeltà","fili","finanziare","fissare","fonda","ford","fotografico","ginevra","ginnastica","gioielli","girone","giudizi","golf","gratuiti","gravemente","hd","impazzire","incapacità","interrotto","islamico","journal","lieto","lodi","malissimo","manuel","menzionato","miami","morali","nettamente","notifica","orchestra","ordinaria","organismi","ottica","partecipano","pepe","perfetti","pericolose","pier","posteriori","potenzialmente","potersi","prassi","preghiere","premessa","presentate","preziosa","proiezione","quest","regolari","renato","rispondono","rivolge","rivoluzionario","roger","romania","rosario","saga","santuario","sapevi","savona","school","scommetto","scriveva","secca","sentirmi","sessanta","sigaretta","sigla","sorprendente","sorprese","specialità","strati","tasto","telefonata","tenore","tiri","tristi","troverà","umore","unire","vedevo","vicinanza","vigilanza","violenze","vorremmo","votazione","wall","abbassare","abituati","alfa","amichevole","andar","angoli","apparso","arcivescovo","attivamente","baia","barriera","bellissime","bibliografia","butta","calcoli","cantanti","chiedeva","chimici","cintura","citata","classificazione","coinvolgere","comandi","confermata","considerano","controllata","conveniente","dell'universo","detenuti","diffusi","dimora","diviene","dottorato","entrando","er","escludere","eseguita","esigenza","esplodere","espressa","fiamma","fiero","foro","frammenti","frontiere","gallo","gang","garanzie","gita","gregorio","guadagni","immaginazione","indirizzi","iniziò","interrompere","inviati","istinto","jane","jimmy","legislatura","letture","loco","lotto","luciano","maestà","magistrati","manchi","mappe","marini","marrone","mensa","mettete","mister","nell'altro","nominare","nono","ombre","ordinanza","orrore","par","paure","peccati","perle","permanenza","perse","picco","piloti","prefettura","pregare","preliminare","preoccupare","preoccuparsi","presentarsi","preti","profonde","raccomando","registrata","ricche","riservata","riusciva","romantico","salvataggio","scemo","schiavitù","sconosciuta","scrittrice","sedici","senz'altro","serate","sereno","sfumature","somme","sottoposti","spa","spostato","stage","strisce","suggerito","svegliato","svolgono","territoriali","tl","tor","trattative","tregua","turistica","uccidendo","ultra","unghie","vanta","variante","vene","vincente","xd","young","accettazione","affetti","affidamento","agisce","aiutarti","all'aeroporto","amen","amsterdam","aosta","appartenente","appassionati","appositamente","arena","arezzo","arrivò","ascoltate","attrazione","attribuito","banale","beach","bla","campionati","celebrazione","cesso","cile","clemente","competenti","concilio","costiera","darci","deficit","degrado","delicato","derivati","dirgli","disposta","domestica","domicilio","donare","eccessiva","ehm","esisteva","estiva","fantascienza","faro","fondatori","franca","franchi","gary","georgia","giuridica","gr","illegali","impedito","impressionante","includono","informati","ingegneri","interiore","invenzione","invidia","laureati","lavorativa","maestra","mago","mantenendo","martiri","mass","matrice","meridionali","metal","minimi","miti","mondi","montaggio","nega","negato","nervi","nina","novara","nuoto","onestà","patrick","piaciuta","pianeti","pianura","pino","podio","potrete","presidenti","prodotte","pronte","prostituzione","qual'è","recarsi","resterà","rilevato","risalire","ritirare","rivelazione","rivolte","rotazione","routine","rovinato","ryan","salario","saresti","savoia","schemi","sconti","seguiti","sfortunatamente","shopping","sinonimo","sognato","solido","sorridere","sottolineato","spettro","stampo","tasche","tecnologico","texas","trasmissioni","vaccino","vola","voluta","abita","adottata","all'italia","alzato","ampie","animazione","araba","arthur","assegno","attraversato","avvicinarsi","azzardo","bande","basterebbe","beatrice","becco","biologico","bontà","britannica","cabina","calibro","cam","car","castel","central","chiederti","chimico","civica","clandestini","commessi","complessiva","condotti","consiglia","consistente","contattato","contenute","coordinate","cornice","cosiddetti","costoso","creatore","decina","divino","divisi","effettiva","effettivo","effettuata","esagerato","fortezza","fossimo","fottuto","frequentemente","funzionalità","gen","gestita","giganti","giuramento","guerriero","have","hoc","immaginato","impulso","inaugurazione","indeterminato","inquietante","installazione","interessate","interviene","ivan","jason","jonathan","justin","liberato","lombardo","magna","management","mangiano","matto","mele","mercedes","metterlo","miniera","misterioso","motto","mutande","ni","nodo","norvegia","novecento","ordina","orientali","pago","pareggio","piange","portatile","portavoce","potreste","precisi","preferite","privilegio","promette","proporzionale","provengono","pullman","rap","rapina","reagire","rendo","riconosciuti","ridotti","riflette","riparare","rompe","saudita","scudo","sembrato","sfogo","significativi","socialismo","soffitto","sottili","sottotitoli","stavamo","stupendo","tablet","talk","tattica","telecamera","terribili","torniamo","trappola","trionfo","unirsi","united","validità","vena","venir","vertici","aggiungono","ago","all'aperto","amaro","ambiti","api","asiatico","aumentando","avvenne","barone","bbc","biblioteche","biologia","brucia","bruciato","campana","capitalismo","circo","circonda","cola","collocazione","colombia","combinato","complotto","confusa","contanti","copyright","cotta","cremona","dall'italia","decorazione","dell'artista","derby","dialoghi","disputa","divenire","domestici","dotati","eleganza","esilio","essenza","estratti","ettari","fake","fermati","ferroviaria","fibre","fogli","gabbia","gabriel","happy","ian","importo","infezione","intendono","intere","invernali","invia","inviata","istituito","laterale","lesioni","lewis","limone","linda","manga","mangi","marie","mediazione","menzione","minacciato","miniere","monitor","ordinario","organico","palese","parchi","parrocchia","permettersi","peste","pianoforte","piega","pochissimi","potenze","pregiudizio","pressoché","pretendere","preziosi","privi","produttività","protetta","psicologica","registra","regolamenti","riferiscono","rifiutare","riflesso","rimanendo","riparo","ritratti","road","robin","salvi","schiavo","scultura","sec","sentenze","sex","siracusa","solite","sopravvissuti","spento","stimato","straordinari","ta","tavole","tenga","tenute","testate","tolleranza","trarre","trasportare","turni","vaccini","variazione","viaggia","visioni","abituato","addestramento","ammetto","ann","arrestati","assessore","assicurarsi","assunta","attende","autrice","avanzato","averli","avuta","azzurra","benedizione","beve","bevuto","biografia","botta","cantina","carenza","cartella","cartoni","chance","christian","cinquecento","coerente","collaboratore","colonie","colpevoli","concessa","conclusa","conosceva","contemporaneo","decente","dell'altra","densità","desiderato","dichiarata","dimenticata","disprezzo","distingue","distretti","dividere","dovevi","dovreste","eccomi","elettrici","emendamento","ennesimo","entrò","esserne","express","fantastici","follower","formalmente","games","genovese","gentilezza","gentilmente","girolamo","giurisdizione","goccia","grammatica","he","high","howard","immenso","incluse","interi","introdotta","investitori","johnson","laddove","leggono","lesbiche","licenziamento","lisa","long","magistrato","maglie","martello","micro","minoranze","modella","moltissime","monopolio","moon","mostre","narra","necessita","nelson","netta","night","nostalgia","nucleari","nuvole","offrendo","orso","passioni","pechino","penali","possedere","prega","prenderà","preoccupazioni","profeta","proiettili","ragionare","regio","restando","ribellione","ricominciare","riscontro","ritengono","sasso","scrivania","seduti","seggi","servirà","seta","sincera","sistemare","sognare","sony","sottoscritto","specializzato","spedito","sposta","statue","studiando","successore","temporanea","tranquillità","tributo","troll","turistico","venere","versato","vincent","volontariato","zaino","accendere","adattamento","affermando","aggiornata","alieni","all'ufficio","ammirare","architetti","assunti","autista","aventi","baci","beppe","bio","bionda","blocca","bloccati","calciatori","campus","celebrità","censimento","check","clan","coach","colpiti","com'era","comprendono","concreta","coniglio","conoscete","continuerà","convince","corta","cost","create","creativo","dario","davis","decimo","decisa","degna","dell'attuale","dell'energia","dente","designer","destinate","detective","difese","dimentica","discendenti","disegnare","dissi","dl","domestico","don't","dona","dovremo","dylan","energetica","esatta","esibizione","estivo","etero","fattoria","fermate","fetta","fiorentino","fornita","fortunati","fossa","furia","generato","geni","girano","giungere","gradualmente","hill","identico","if","iniziate","interprete","interruzione","ira","jeff","largamente","laser","levi","lgbt","licenziato","lite","ll","mais","maledetto","massacro","mediaset","obbiettivo","odierna","ottenuta","pagata","page","paghi","palo","parentesi","partigiani","passerà","perla","pesantemente","poeti","poterlo","prestato","presumibilmente","presunta","presunto","quarti","rafforzare","rappresentati","registrazioni","ricambio","ricevute","richiama","risveglio","romantica","rovinare","russe","salari","salito","sbaglia","scatto","scavi","scienziato","scorre","separate","serbia","siciliana","socialisti","south","spiriti","stadi","sur","sviluppata","tarda","temere","teologia","tessera","trasferire","trasformata","trattamenti","tredici","uscendo","usiamo","valigia","veleno","venezuela","vettura","ville","vocale","volgare","ac","africano","agostino","agricole","agricolo","albert","alloggio","artistiche","aspettava","aumentata","avvertito","avviare","benevento","bernardo","cacciato","cambiate","cancello","carri","cava","certificati","colla","collegata","collegate","commercianti","comunione","condotte","configurazione","cronache","cugina","curiosa","danneggiato","dell'intera","difeso","ditemi","dopotutto","drive","durare","effettuate","ego","elevati","emilio","equivale","essermi","etico","evitando","ferrovia","fifa","finlandia","fragile","france","freccia","giudicato","gridare","hugo","impronta","installare","intimo","ios","ispettore","just","laterali","lieve","light","limitazioni","linguistico","london","lontane","malata","marea","mazza","miliardo","miller","monarchia","nascosti","nient'altro","nipoti","nudi","oliver","orizzontale","panino","passivo","pellegrini","percentuali","pesa","piove","pomodoro","pompa","praticare","precise","prenderlo","preside","prestigio","profitti","promuove","proteine","pub","razze","renderlo","ribelle","richiesti","rimani","rinascita","ringraziamento","rinnovato","risolve","sacerdoti","scarpa","sceso","scolastici","sega","sentiva","sesta","sicure","simpatica","sostenuta","sposo","spostamento","spunto","stone","stradali","strega","sun","talenti","tariffa","telecom","tenersi","tensioni","tommy","tornò","trauma","triennale","tumori","ubriaco","ugo","umbria","victoria","vizio","vuoti","welfare","abbandonati","acquisizione","adige","adriano","andasse","andremo","animato","apprendimento","arbitro","au","bandiere","banner","barriere","basilicata","bastava","battesimo","beccato","bon","brand","buenos","cammina","carla","caserta","casini","classiche","collaborato","collezioni","compassione","comprensibile","compro","concedere","concentrato","conformità","consapevoli","contadino","contenenti","controversia","corde","credibilità","cross","cuneo","defunto","dell'ultima","determina","diplomatico","direttori","discreto","distribuito","donald","dosi","drago","elettriche","elettronico","emissione","esca","esporre","eugenio","farmacia","fascio","fast","filmati","fondamento","fornitura","freno","funzionario","gialla","giustificazione","gomme","hacker","hollywood","ignoranti","im","incapaci","incarichi","incredibili","indigeni","indubbiamente","inflazione","insegnamenti","installato","interpretazioni","invernale","jordan","ligure","lobby","lu","may","meme","milanesi","missili","mondadori","mostrando","napoletana","nodi","notturno","now","particolar","pen","permessi","piombo","point","polso","poltrona","pr","prefetto","presenze","pretesto","proviamo","pulizie","punito","ra","raggiungimento","regge","renda","rendimento","repertorio","repressione","ricevuti","richiamato","ridicola","ripete","rispose","rituale"];
+  vocab = vocab.filter(function(w,i){ return vocab.indexOf(w)===i; }); // dedup
+
+  // Concordanza dopo un articolo/determinante: solo nomi del genere giusto
+  var nounsM=["bagno","caffè","medico","letto","telefono","bicchiere","cibo","cuscino",
+    "dolore","dottore","pane","latte","cuore","respiro","braccio","piede","tavolo","aiuto",
+    "giorno","naso","petto","assistente","cellulare","giornale"];
+  var nounsF=["acqua","medicina","luce","porta","finestra","doccia","coperta","sedia",
+    "poltrona","mano","gamba","testa","bocca","gola","pancia","schiena","febbre","tosse",
+    "nausea","stanza","cucina","sete","fame","paura","televisione","coperta"];
+  nounsM=nounsM.filter(function(w,i){return nounsM.indexOf(w)===i;});
+  nounsF=nounsF.filter(function(w,i){return nounsF.indexOf(w)===i;});
+  var detMasc={"il":1,"lo":1,"un":1,"l'":1,"questo":1,"quello":1,"del":1,"dello":1,"nel":1,"al":1};
+  var detFem={"la":1,"una":1,"un'":1,"questa":1,"quella":1,"della":1,"nella":1,"alla":1};
+
+  // Quando la frase esprime la volontà di contattare qualcuno, proponi i NOMI:
+  // prima i familiari, poi gli altri contatti. (Nel mockup sono nomi d'esempio;
+  // nell'app verrebbero dalla rubrica personale con foto — §7.)
+  var contacts=contactNames(); // nomi per i suggerimenti "chiama/parla/telefona"
+  function contactFromWord(w){
+    var base=w.replace(/^(con|ad|a|al|alla|allo|ai|alle)\s+/i,"").trim().toLowerCase();
+    for(var i=0;i<contacts.length;i++){ if(contacts[i].toLowerCase()===base) return contacts[i]; }
+    return null;
+  }
+  function bumpContact(w){ var c=contactFromWord(w); if(c){ contactUse[c]=(contactUse[c]||0)+1; LS.set("contacts",contactUse); } }
+  var callVerbs={"chiama":1,"chiamare":1,"chiamate":1,"chiami":1,"chiamo":1,"chiamami":1,
+    "telefona":1,"telefonare":1,"telefono":1,"parla":1,"parlare":1,"parlo":1,
+    "videochiama":1,"videochiamare":1,"senti":1,"sentire":1,"chiamala":1,"chiamalo":1};
+  var linkWords={"a":1,"con":1,"al":1,"alla":1,"allo":1,"ai":1,"alle":1};
+  function wantsName(words){
+    var last=words[words.length-1];
+    if(callVerbs[last]) return true;
+    if(linkWords[last] && words.length>=2 && callVerbs[words[words.length-2]]) return true;
+    return false;
+  }
+  var contactUse=LS.get("contacts", {}); // nome -> quante volte scelto (personalizzazione)
+  function orderedContacts(){
+    var idx={}; contacts.forEach(function(n,i){ idx[n]=i; });
+    return contacts.slice().sort(function(a,b){
+      var d=(contactUse[b]||0)-(contactUse[a]||0);   // più usato prima
+      return d!==0 ? d : idx[a]-idx[b];              // a parità, familiari prima
+    });
+  }
+  function namesFor(words){
+    var last=words[words.length-1];
+    var list=orderedContacts();
+    if(linkWords[last]) return list;                             // preposizione già scritta
+    if(/^parl/.test(last)) return list.map(function(n){return "con "+n;});
+    if(/^telefon/.test(last)) return list.map(function(n){return "a "+n;});
+    return list;                                                 // chiama / videochiama / senti
+  }
+
+  function byPrefix(pool, frag){
+    return pool.filter(function(w){ return w.indexOf(frag)===0 && w!==frag; });
+  }
+  function predict(t){
+    if(t.replace(/\s+$/,"")===""){ return starters; }        // start of sentence
+    if(/\s$/.test(t)){                                        // just completed a word
+      var words=t.trim().toLowerCase().replace(/[.,!?;:]/g,"").split(/\s+/);
+      if(wantsName(words)){ return namesFor(words); }         // intenzione di contattare -> nomi
+      var prev=words[words.length-1];
+      if(nextWord[prev]) return nextWord[prev];
+      if(detMasc[prev]) return nounsM;                        // dopo "il/lo/un…" -> nomi maschili
+      if(detFem[prev]) return nounsF;                         // dopo "la/una…" -> nomi femminili
+      return nextWord["_next"];
+    }
+    // still typing a word: completa solo con parole sensate per il contesto
+    var toks=t.split(/\s+/);
+    var frag=toks[toks.length-1].toLowerCase();
+    var prev=toks.length>=2 ? toks[toks.length-2].toLowerCase().replace(/[.,!?;:]/g,"") : "";
+    if(detMasc[prev]) return byPrefix(nounsM, frag);          // dopo un articolo maschile
+    if(detFem[prev]) return byPrefix(nounsF, frag);           // dopo un articolo femminile
+    return byPrefix(vocab, frag);
+  }
+  function suggestFor(){ return predict(kbText); }
+
+  // --- predictive words on the HOME screen, during composition ---
+  function appendToPhrase(w){
+    var isFirst = current.replace(/\s+$/,"")==="";
+    var word = isFirst ? w.charAt(0).toUpperCase()+w.slice(1) : w;
+    var base = current;
+    if(base==="" || /\s$/.test(base)) current = base+word+" ";
+    else current = base+" "+word+" ";
+    bumpContact(w);
+    setPhrase(current);        // aggiorna campo e ri-renderizza i suggerimenti
+    preparing(true);           // frase pronta ma non ancora pronunciata
+  }
+  function renderHomeSuggests(){
+    var box=document.getElementById("homeSuggests");
+    if(!box) return;
+    var t=current.replace(/\s+$/,"");
+    if(t===""){ box.hidden=true; box.innerHTML=""; return; }
+    var list=predict(t+" ");                                  // sempre come "parola completata"
+    box.innerHTML="";
+    if(!list.length){ box.hidden=true; return; }
+    box.hidden=false;
+    for(var i=0;i<6;i++){
+      var bt=document.createElement("button");
+      bt.className="btn hsugg"; bt.type="button";
+      var w=list[i]||"";
+      if(w){ bt.innerHTML='<span class="lab">'+w+'</span>';
+        (function(x){ bt.addEventListener("click",function(){ appendToPhrase(x); }); })(w);
+      } else { bt.disabled=true; }
+      box.appendChild(bt);
+    }
+  }
+  function insertWord(w){
+    var before=kbText.replace(/\S*$/,"");                     // text before the trailing partial
+    var isFirst=before.trim()==="";
+    var word=isFirst ? w.charAt(0).toUpperCase()+w.slice(1) : w;
+    if(kbText==="" || /\s$/.test(kbText)){ kbText=kbText+word+" "; }
+    else { kbText=before+word+" "; }
+    // personalizzazione: se ho inserito un contatto, conto quante volte è scelto
+    bumpContact(w);
+    renderKb();
+  }
+  function renderSuggests(){
+    var list=suggestFor();
+    var before=kbText.replace(/\S*$/,"");
+    var isFirst=before.trim()==="";
+    suggests.innerHTML="";
+    for(var i=0;i<SUGG;i++){
+      var b=document.createElement("button");
+      b.className="btn sugg"; b.type="button";
+      var word=list[i]||"";
+      if(word){
+        var disp=isFirst ? word.charAt(0).toUpperCase()+word.slice(1) : word;
+        b.innerHTML='<span class="lab">'+disp+'</span>';
+        (function(w){ b.addEventListener("click",function(){ insertWord(w); }); })(word);
+      }
+      suggests.appendChild(b);
+    }
+  }
+  function renderField(){
+    if(kbText===""){ kbField.textContent="Scrivi qui…"; kbField.classList.add("empty"); }
+    else {
+      kbField.classList.remove("empty");
+      kbField.textContent=kbText;
+      var c=document.createElement("span"); c.className="caret"; kbField.appendChild(c);
+    }
+  }
+  function renderKb(){ renderField(); renderSuggests(); }
+  function buildKeys(){
+    kbRows.innerHTML="";
+    LAYOUTS[kbMode].forEach(function(r, ri){
+      var row=document.createElement("div"); row.className="kb-row";
+      if(ri===2){ // ultima riga: tasto modalità a sinistra della Z
+        var mk=document.createElement("button");
+        mk.className="key key-mode"; mk.type="button";
+        mk.textContent = kbMode==="abc" ? ".?123" : "ABC";
+        mk.setAttribute("aria-label", kbMode==="abc" ? "Numeri e punteggiatura" : "Lettere");
+        mk.addEventListener("click", function(){ kbMode = kbMode==="abc" ? "sym" : "abc"; buildKeys(); });
+        row.appendChild(mk);
+      }
+      r.forEach(function(ch){
+        var k=document.createElement("button");
+        k.className="key"; k.type="button"; k.textContent=ch;
+        var ins=(kbMode==="abc") ? ch.toLowerCase() : ch;
+        k.addEventListener("click",(function(x){ return function(){ kbText+=x; renderKb(); }; })(ins));
+        row.appendChild(k);
+      });
+      kbRows.appendChild(row);
+    });
+  }
+  buildKeys();
+  function openKeyboard(){
+    kbText = current || "";
+    renderKb(); renderFreq(); keyboard.classList.add("open");
+    setTimeout(function(){ var el=document.getElementById("kbSpeak"); if(el) el.focus(); },0);
+  }
+  document.getElementById("freqBtn").addEventListener("click", function(){
+    var p=topPhrase();
+    if(p){ kbText=p+" "; renderKb(); }
+  });
+  document.getElementById("freqDel").addEventListener("click", function(){
+    var p=topPhrase(); if(!p) return;
+    askConfirm("Togliere «"+p+"» dalle frasi più usate?", function(){
+      delete history[p]; LS.set("history", history); renderFreq();
+    });
+  });
+  phrase.addEventListener("click", openKeyboard);
+  phrase.addEventListener("keydown", function(e){
+    if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openKeyboard(); }
+  });
+  document.getElementById("kSpace").addEventListener("click",function(){ kbText+=" "; renderKb(); });
+  document.getElementById("kBack").addEventListener("click",function(){ kbText=kbText.slice(0,-1); renderKb(); });
+  document.getElementById("kBackWord").addEventListener("click",function(){
+    // remove trailing spaces, then the last word
+    kbText=kbText.replace(/\s+$/,"").replace(/\S+$/,"");
+    renderKb();
+  });
+  document.getElementById("kClear").addEventListener("click",function(){
+    if(!kbText){ return; }
+    askConfirm("Cancellare tutto il testo?", function(){ kbText=""; renderKb(); });
+  });
+  document.getElementById("kbSpeak").addEventListener("click",function(){
+    var t=kbText.trim();
+    if(t){ setPhrase(t); say(t); recordPhrase(t); preparing(false); keyboard.classList.remove("open"); try{phrase.focus();}catch(e){} }
+  });
+  document.getElementById("kClose").addEventListener("click",function(){
+    var t=kbText.trim();
+    if(t){ setPhrase(t); preparing(true); } // staged but not yet spoken
+    keyboard.classList.remove("open");
+    try{phrase.focus();}catch(e){}
+  });
+
+  // ---- tastiera fisica (uso su computer) ----
+  function isControl(el){
+    if(!el) return false;
+    var t=(el.tagName||"").toLowerCase();
+    return t==="button"||t==="select"||t==="a"||t==="input"||t==="textarea"||
+      (el.getAttribute && el.getAttribute("role")==="button");
+  }
+  document.addEventListener("keydown", function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;      // lascia le scorciatoie del sistema
+    var kbOpen=keyboard.classList.contains("open");
+    var key=e.key, onControl=isControl(e.target);
+
+    if(key==="Escape"){
+      if(confirmEl.classList.contains("open")){ confirmEl.classList.remove("open"); confirmCb=null; }
+      else if(kbOpen){ keyboard.classList.remove("open"); }
+      else if(document.getElementById("options").classList.contains("open")){ closeOptions(); }
+      else if(overlay.classList.contains("open")){ closeOverlay(); }
+      return;
+    }
+    if(key==="Enter"){
+      if(onControl && !kbOpen) return;              // lascia attivare il pulsante a fuoco
+      e.preventDefault();
+      if(kbOpen){ var t=kbText.trim(); if(t){ setPhrase(t); say(t); recordPhrase(t); preparing(false); keyboard.classList.remove("open"); } }
+      else if(current.trim()){ say(current); recordPhrase(current); preparing(false); }
+      return;
+    }
+    if(key==="Backspace"){
+      e.preventDefault();
+      if(kbOpen){ kbText=kbText.slice(0,-1); renderKb(); }
+      else { setPhrase(current.slice(0,-1)); preparing(!!current.trim()); }
+      return;
+    }
+    if(key===" "){
+      if(onControl && !kbOpen) return;              // lo spazio attiva il pulsante a fuoco
+      e.preventDefault();
+      if(kbOpen){ kbText+=" "; renderKb(); } else { setPhrase(current+" "); preparing(!!current.trim()); }
+      return;
+    }
+    if(key.length===1){                              // carattere stampabile
+      e.preventDefault();
+      if(kbOpen){ kbText+=key.toLowerCase(); renderKb(); }
+      else {
+        var isFirst=current.replace(/\s+$/,"")==="";
+        var ch=(isFirst && /[a-zà-ÿ]/i.test(key)) ? key.toUpperCase() : key;
+        setPhrase(current+ch); preparing(true);
+      }
+      return;
+    }
+  });
+
+  // ================= ACCESSIBILITÀ E OPZIONI =================
+
+  function setSpeaking(on){ var b=document.getElementById("speakbar"); if(b) b.hidden=!on; }
+
+  var actx=null;
+  function beep(){
+    try{
+      if(!actx){ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; actx=new AC(); }
+      if(actx.state==="suspended") actx.resume();
+      var o=actx.createOscillator(), g=actx.createGain();
+      o.type="sine"; o.frequency.value=880; g.gain.value=0.05;
+      o.connect(g); g.connect(actx.destination);
+      var t=actx.currentTime; o.start(t); o.stop(t+0.08);
+    }catch(e){}
+  }
+
+  function applyHidden(){
+    var q=document.querySelector(".quickbar"); if(q) q.hidden=!!settings.hidden.quickbar;
+    var intent=document.querySelector(".intentions"); if(intent) intent.hidden=!!settings.hidden.intentions;
+    var side=document.querySelector(".side"); if(side) side.hidden=!!settings.hidden.help;
+    var mid=document.querySelector(".middle"); if(mid) mid.classList.toggle("nohelp", !!settings.hidden.help);
+  }
+
+  // Filtro tocchi: durata minima della pressione + intervallo minimo tra due tocchi + conferma visiva
+  var lastAccepted=0, pressStart=0;
+  document.addEventListener("pointerdown", function(){ pressStart=Date.now(); }, true);
+  document.addEventListener("click", function(e){
+    var el=e.target.closest ? e.target.closest(".btn,.key,.ctx,.phrase,.need,.hsugg,.sugg") : null;
+    if(!el) return;
+    if(document.getElementById("options").classList.contains("open")) return; // nel pannello opzioni nessun filtro
+    var now=Date.now();
+    if(settings.pressDuration>0 && pressStart && (now-pressStart) < settings.pressDuration){
+      e.stopPropagation(); e.preventDefault(); return;   // pressione troppo breve
+    }
+    if(now-lastAccepted < settings.minInterval){
+      e.stopPropagation(); e.preventDefault(); return;   // doppio tocco troppo ravvicinato
+    }
+    lastAccepted=now;
+    if(settings.feedback){ el.classList.add("cmd-flash"); setTimeout(function(){ el.classList.remove("cmd-flash"); },220); }
+  }, true);
+
+  // ---- pannello opzioni ----
+  function mk(tag,attrs,txt){
+    var e=document.createElement(tag);
+    if(attrs) for(var k in attrs){ if(k==="class") e.className=attrs[k]; else e.setAttribute(k,attrs[k]); }
+    if(txt!=null) e.textContent=txt; return e;
+  }
+  function closeOptions(){ document.getElementById("options").classList.remove("open"); try{phrase.focus();}catch(e){} }
+  document.getElementById("optClose").addEventListener("click", closeOptions);
+
+  function renderPinEntry(title, onDigits){
+    var body=document.getElementById("optBody"); body.innerHTML="";
+    document.getElementById("optTitle").textContent=title;
+    var buf=""; var disp=mk("div",{class:"pin-display"},""); body.appendChild(disp);
+    function upd(){ disp.textContent=buf.replace(/./g,"•"); }
+    var pad=mk("div",{class:"pinpad"});
+    ["1","2","3","4","5","6","7","8","9"].forEach(function(d){
+      var b=mk("button",{class:"opt-btn",type:"button"},d);
+      b.addEventListener("click",function(){ if(buf.length<8){buf+=d;upd();} }); pad.appendChild(b);
+    });
+    var bc=mk("button",{class:"opt-btn",type:"button"},"←"); bc.addEventListener("click",function(){ buf=buf.slice(0,-1); upd(); });
+    var b0=mk("button",{class:"opt-btn",type:"button"},"0"); b0.addEventListener("click",function(){ if(buf.length<8){buf+="0";upd();} });
+    var bok=mk("button",{class:"opt-btn primary",type:"button"},"OK"); bok.addEventListener("click",function(){ onDigits(buf); });
+    pad.appendChild(bc); pad.appendChild(b0); pad.appendChild(bok);
+    body.appendChild(pad);
+  }
+  function renderPinGate(){ renderPinEntry("Inserisci il codice", function(code){ if(code===settings.pin){ renderOptions(); } else { renderPinGate(); } }); }
+  function renderPinSetter(){ renderPinEntry("Nuovo codice, poi OK", function(code){ if(code.length>=3){ settings.pin=code; saveSettings(); renderOptions(); } else { renderPinSetter(); } }); }
+
+  function renderOptions(){
+    var body=document.getElementById("optBody"); body.innerHTML="";
+    document.getElementById("optTitle").textContent="Opzioni (caregiver)";
+
+    // Contatti
+    var s1=mk("div",{class:"opt-sec"}); s1.appendChild(mk("h3",null,"Contatti"));
+    var l1=mk("div",{class:"opt-list"});
+    settings.contacts.forEach(function(c,i){
+      var row=mk("div",{class:"opt-item"});
+      var n=mk("input",{type:"text",placeholder:"Nome"}); n.value=c.name;
+      n.addEventListener("input",function(){ settings.contacts[i].name=n.value; saveSettings(); renderContexts(); });
+      var r=mk("input",{type:"text",placeholder:"relazione"}); r.value=c.rel||""; r.style.maxWidth="150px";
+      r.addEventListener("input",function(){ settings.contacts[i].rel=r.value; saveSettings(); renderContexts(); });
+      var del=mk("button",{class:"opt-btn danger",type:"button"},"✕");
+      del.addEventListener("click",function(){ settings.contacts.splice(i,1); saveSettings(); renderContexts(); renderOptions(); });
+      row.appendChild(n); row.appendChild(r); row.appendChild(del); l1.appendChild(row);
+    });
+    s1.appendChild(l1);
+    var a1=mk("button",{class:"opt-btn primary",type:"button"},"+ Aggiungi contatto");
+    a1.addEventListener("click",function(){ settings.contacts.push({name:"Nuovo",rel:""}); saveSettings(); renderContexts(); renderOptions(); });
+    s1.appendChild(a1); body.appendChild(s1);
+
+    // Frasi personalizzate
+    var s2=mk("div",{class:"opt-sec"}); s2.appendChild(mk("h3",null,"Le mie frasi"));
+    var l2=mk("div",{class:"opt-list"});
+    settings.phrases.forEach(function(t,i){
+      var row=mk("div",{class:"opt-item"});
+      var inp=mk("input",{type:"text",placeholder:"Frase"}); inp.value=t;
+      inp.addEventListener("input",function(){ settings.phrases[i]=inp.value; saveSettings(); });
+      inp.addEventListener("change",function(){ renderContexts(); });
+      var del=mk("button",{class:"opt-btn danger",type:"button"},"✕");
+      del.addEventListener("click",function(){ settings.phrases.splice(i,1); saveSettings(); renderContexts(); renderOptions(); });
+      row.appendChild(inp); row.appendChild(del); l2.appendChild(row);
+    });
+    s2.appendChild(l2);
+    var a2=mk("button",{class:"opt-btn primary",type:"button"},"+ Aggiungi frase");
+    a2.addEventListener("click",function(){ settings.phrases.push("Nuova frase"); saveSettings(); renderContexts(); renderOptions(); });
+    s2.appendChild(a2); body.appendChild(s2);
+
+    // Tocco e conferme
+    var s3=mk("div",{class:"opt-sec"}); s3.appendChild(mk("h3",null,"Tocco e conferme"));
+    var r3a=mk("div",{class:"opt-row"}); r3a.appendChild(mk("label",null,"Intervallo minimo tra due tocchi"));
+    var selInt=mk("select");
+    [["0","nessuno"],["250","250 ms"],["350","350 ms"],["500","500 ms"],["800","800 ms"]].forEach(function(o){ var op=mk("option",{value:o[0]},o[1]); if(String(settings.minInterval)===o[0]) op.selected=true; selInt.appendChild(op); });
+    selInt.addEventListener("change",function(){ settings.minInterval=parseInt(selInt.value,10)||0; saveSettings(); });
+    r3a.appendChild(selInt); s3.appendChild(r3a);
+    var r3b=mk("div",{class:"opt-row"}); r3b.appendChild(mk("label",null,"Durata minima della pressione"));
+    var selP=mk("select");
+    [["0","immediato"],["300","0,3 s"],["600","0,6 s"],["1000","1 s"]].forEach(function(o){ var op=mk("option",{value:o[0]},o[1]); if(String(settings.pressDuration)===o[0]) op.selected=true; selP.appendChild(op); });
+    selP.addEventListener("change",function(){ settings.pressDuration=parseInt(selP.value,10)||0; saveSettings(); });
+    r3b.appendChild(selP); s3.appendChild(r3b);
+    var r3c=mk("label",{class:"opt-check"}); var chk=mk("input",{type:"checkbox"}); chk.checked=!!settings.feedback;
+    chk.addEventListener("change",function(){ settings.feedback=chk.checked; saveSettings(); });
+    r3c.appendChild(chk); r3c.appendChild(document.createTextNode("Conferma visiva e sonora dopo ogni comando"));
+    s3.appendChild(r3c); body.appendChild(s3);
+
+    // Nascondi funzioni
+    var s4=mk("div",{class:"opt-sec"}); s4.appendChild(mk("h3",null,"Nascondi funzioni non usate"));
+    function hideCheck(key,label){
+      var l=mk("label",{class:"opt-check"}); var c=mk("input",{type:"checkbox"}); c.checked=!!settings.hidden[key];
+      c.addEventListener("change",function(){ settings.hidden[key]=c.checked; saveSettings(); applyHidden(); renderContexts(); });
+      l.appendChild(c); l.appendChild(document.createTextNode(label)); return l;
+    }
+    s4.appendChild(hideCheck("intentions","Sì / No / Non so"));
+    s4.appendChild(hideCheck("quickbar","Barra rapida in basso"));
+    s4.appendChild(hideCheck("help","Tasto AIUTO"));
+    contexts.forEach(function(c){ s4.appendChild(hideCheck("ctx_"+c.key,"Contesto: "+c.lab)); });
+    body.appendChild(s4);
+
+    // Codice caregiver
+    var s5=mk("div",{class:"opt-sec"}); s5.appendChild(mk("h3",null,"Codice caregiver"));
+    s5.appendChild(mk("div",{class:"opt-row"}, settings.pin?"Codice attivo: all'apertura viene richiesto.":"Nessun codice. Le opzioni si aprono con pressione prolungata sull'ingranaggio."));
+    var r5=mk("div",{class:"opt-row"});
+    var setBtn=mk("button",{class:"opt-btn",type:"button"}, settings.pin?"Cambia codice":"Imposta codice");
+    setBtn.addEventListener("click",renderPinSetter); r5.appendChild(setBtn);
+    if(settings.pin){ var rm=mk("button",{class:"opt-btn danger",type:"button"},"Togli codice"); rm.addEventListener("click",function(){ settings.pin=""; saveSettings(); renderOptions(); }); r5.appendChild(rm); }
+    s5.appendChild(r5); body.appendChild(s5);
+  }
+
+  function openOptionsGate(){
+    var o=document.getElementById("options"); o.classList.add("open");
+    if(settings.pin){ renderPinGate(); } else { renderOptions(); }
+    setTimeout(function(){ var el=document.getElementById("optClose"); if(el) el.focus(); },0);
+  }
+  (function(){
+    var gear=document.getElementById("gearBtn");
+    // Tocco normale: affidabile su iPhone/iPad/Android. La protezione è il PIN (se impostato).
+    gear.addEventListener("click", function(e){ e.preventDefault(); openOptionsGate(); });
+  })();
+
+  applyHidden();
+
+  setPhrase("");
+  renderFreq();
+})();
+</script>
+</body>
+</html>
